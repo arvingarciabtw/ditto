@@ -1,6 +1,7 @@
 package main
 
 import (
+	help "charm.land/bubbles/v2/help"
 	list "charm.land/bubbles/v2/list"
 )
 
@@ -12,6 +13,7 @@ type Model struct {
 	showLayoutList bool
 	showSizeList   bool
 	showInfoBar    bool
+	helpModel      help.Model
 }
 
 func getInitModel() Model {
@@ -23,6 +25,7 @@ func getInitModel() Model {
 		showLayoutList: false,
 		showSizeList:   false,
 		showInfoBar:    true,
+		helpModel:      help.New(),
 	}
 	initModel.layoutList.Title = "Layouts"
 	initModel.layoutList.KeyMap.Quit.SetKeys("q")

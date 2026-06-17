@@ -7,8 +7,4 @@ var (
 	listStyle      = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
 			Padding(1, 2)
-	bgStyle = lipgloss.NewStyle().
-		Padding(0, 1).
-		Background(lipgloss.Color("#0000FF")).
-		TabWidth(0)
 )

@@ -31,6 +31,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.showInfoBar = !m.showInfoBar
 			return m, nil
 
+		case "?":
+			m.helpModel.ShowAll = !m.helpModel.ShowAll
+			return m, nil
+
 		case "enter":
 			if m.showLayoutList && m.layoutList.FilterState() != list.Filtering {
 				if selected, ok := m.layoutList.SelectedItem().(item); ok {
@@ -73,6 +77,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		h, v := listFrameStyle.GetFrameSize()
 		m.layoutList.SetSize(msg.Width-h, msg.Height-v)
 		m.sizeList.SetSize(msg.Width-h, msg.Height-v)
+		m.helpModel.SetWidth(msg.Width)
 	}
 
 	var cmd1, cmd2 tea.Cmd

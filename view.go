@@ -58,21 +58,16 @@ func getBaseView(m Model) string {
 }
 
 func getInfoBar(m Model, terminalWidth int, terminalHeight int) string {
-	// TODO: eventually replace with Help component from Bubbles
+	leftKey := m.helpModel.Styles.FullKey.Render(fmt.Sprintf("%d%%", m.activeSize))
+	leftDesc := m.helpModel.Styles.FullDesc.Render(" •︎", m.activeLayout)
+	left := lipgloss.JoinHorizontal(lipgloss.Bottom, leftKey, "", leftDesc)
 
-	layoutCommand := bgStyle.Render("C-S-L: Layout")
-	sizeCommand := bgStyle.Render("C-S-S: Size")
-	hideCommand := bgStyle.Render("C-S-H: Hide Bar")
-	activeLayout := bgStyle.Render(strings.ToUpper(m.activeLayout))
-	activeSize := bgStyle.Render(fmt.Sprintf("%d%%", m.activeSize))
+	right := m.helpModel.View(keys)
 
-	commands := lipgloss.JoinHorizontal(lipgloss.Bottom, layoutCommand, " ", sizeCommand, " ", hideCommand)
-	activeConfigs := lipgloss.JoinHorizontal(lipgloss.Bottom, activeLayout, " ", activeSize)
-
-	spacerWidth := terminalWidth - lipgloss.Width(activeConfigs) - lipgloss.Width(commands)
+	spacerWidth := terminalWidth - lipgloss.Width(left) - lipgloss.Width(right)
 	spacer := strings.Repeat(" ", max(0, spacerWidth))
 
-	infoBar := lipgloss.JoinHorizontal(lipgloss.Bottom, activeConfigs, spacer, commands)
+	infoBar := lipgloss.JoinHorizontal(lipgloss.Bottom, left, spacer, right)
 	infoBar = lipgloss.Place(terminalWidth, terminalHeight, lipgloss.Left, lipgloss.Bottom, infoBar)
 	return infoBar
 }
