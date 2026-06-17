@@ -22,9 +22,10 @@ var keyboardLayoutItems = []list.Item{
 }
 
 var keyboardSizeItems = []list.Item{
-	item{title: "60%", desc: "No backtick :("},
-	item{title: "65%", desc: "Really?"},
-	item{title: "75%", desc: "The classic"},
-	item{title: "80%", desc: "Oooh"},
-	item{title: "100%", desc: "Damn"},
+	item{title: "60%", desc: "61 keys"},
+	item{title: "65%", desc: "68 keys"},
+	item{title: "75%", desc: "84 keys"},
+	item{title: "80%", desc: "87 keys"},
+	item{title: "96%", desc: "100 keys"},
+	item{title: "100%", desc: "104 keys"},
 }

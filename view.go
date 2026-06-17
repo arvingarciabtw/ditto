@@ -44,20 +44,27 @@ func (m Model) View() tea.View {
 }
 
 func getBaseView(m Model) string {
-	terminalWidth, terminalHeight, err := getTerminalSize()
+	termW, termH, err := getTerminalSize()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v", err)
 		os.Exit(1)
 	}
 
+	keyboardArt := renderKeyboardArt(m.activeSize)
+
 	if !m.showInfoBar {
-		return lipgloss.Place(terminalWidth, terminalHeight, lipgloss.Left, lipgloss.Bottom, "")
+		return lipgloss.Place(termW, termH, lipgloss.Center, lipgloss.Center, keyboardArt)
 	}
-	baseView := getInfoBar(m, terminalWidth, terminalHeight)
-	return baseView
+
+	infoBar := getInfoBar(m, termW)
+	kbLines := strings.Count(keyboardArt, "\n") + 1
+	if kbLines >= termH {
+		return keyboardArt + "\n" + infoBar
+	}
+	return lipgloss.Place(termW, termH-1, lipgloss.Center, lipgloss.Center, keyboardArt) + "\n" + infoBar
 }
 
-func getInfoBar(m Model, terminalWidth int, terminalHeight int) string {
+func getInfoBar(m Model, terminalWidth int) string {
 	leftKey := m.helpModel.Styles.FullKey.Render(fmt.Sprintf("%d%%", m.activeSize))
 	leftDesc := m.helpModel.Styles.FullDesc.Render(" •︎", m.activeLayout)
 	left := lipgloss.JoinHorizontal(lipgloss.Bottom, leftKey, "", leftDesc)
@@ -67,9 +74,7 @@ func getInfoBar(m Model, terminalWidth int, terminalHeight int) string {
 	spacerWidth := terminalWidth - lipgloss.Width(left) - lipgloss.Width(right)
 	spacer := strings.Repeat(" ", max(0, spacerWidth))
 
-	infoBar := lipgloss.JoinHorizontal(lipgloss.Bottom, left, spacer, right)
-	infoBar = lipgloss.Place(terminalWidth, terminalHeight, lipgloss.Left, lipgloss.Bottom, infoBar)
-	return infoBar
+	return lipgloss.JoinHorizontal(lipgloss.Bottom, left, spacer, right)
 }
 
 func getOverlay(bg string, menu string, x, y int) string {
