@@ -46,6 +46,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.activeLayout = strings.ToLower(selected.title)
 				}
 				m.showLayoutList = false
+				saveConfig(Config{ActiveLayout: m.activeLayout, ActiveSize: m.activeSize})
 				return m, nil
 			}
 			if m.showSizeList && m.sizeList.FilterState() != list.Filtering {
@@ -56,6 +57,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 				}
 				m.showSizeList = false
+				saveConfig(Config{ActiveLayout: m.activeLayout, ActiveSize: m.activeSize})
 				return m, nil
 			}
 

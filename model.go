@@ -17,11 +17,12 @@ type Model struct {
 }
 
 func getInitModel() Model {
+	cfg := loadConfig()
 	initModel := Model{
 		layoutList:     list.New(keyboardLayoutItems, list.NewDefaultDelegate(), 0, 0),
 		sizeList:       list.New(keyboardSizeItems, list.NewDefaultDelegate(), 0, 0),
-		activeLayout:   "qwerty",
-		activeSize:     75,
+		activeLayout:   cfg.ActiveLayout,
+		activeSize:     cfg.ActiveSize,
 		showLayoutList: false,
 		showSizeList:   false,
 		showInfoBar:    true,
