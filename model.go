@@ -14,6 +14,12 @@ type Model struct {
 	showSizeList   bool
 	showInfoBar    bool
 	helpModel      help.Model
+	pressedKeys    map[uint16]bool
+}
+
+type GlobalKeyMsg struct {
+	Code uint16
+	Down bool
 }
 
 func getInitModel() Model {
@@ -27,6 +33,7 @@ func getInitModel() Model {
 		showSizeList:   false,
 		showInfoBar:    true,
 		helpModel:      help.New(),
+		pressedKeys:    make(map[uint16]bool),
 	}
 	initModel.layoutList.Title = "Layouts"
 	initModel.layoutList.KeyMap.Quit.SetKeys("q")

@@ -18,19 +18,52 @@ func applyLayout(keys []Key, layoutMap map[string]string) []Key {
 	return result
 }
 
-func buildKeyboard(size int, layout string) string {
+func buildKeyboard(size int, layout string, pressedKeys map[uint16]bool) string {
 	rows, ok := keyboardSizes[size]
 	if !ok {
 		return ""
 	}
 	layoutMap := keyboardLayouts[layout]
+
+	evCodeToLabel := make(map[uint16]string)
+	labelCount := make(map[string]int)
+	for _, row := range rows {
+		for _, k := range row {
+			evCodeToLabel[k.EvCode] = k.Label
+			labelCount[k.Label]++
+		}
+	}
+
+	pressedByLabel := make(map[string]bool)
+	pressedByEvCode := make(map[uint16]bool)
+	for code, down := range pressedKeys {
+		if !down {
+			continue
+		}
+		label, ok := evCodeToLabel[code]
+		if !ok {
+			continue
+		}
+		if labelCount[label] > 1 {
+			pressedByEvCode[code] = true
+		} else {
+			pressedByLabel[label] = true
+		}
+	}
+
 	var lines []string
 	for i, row := range rows {
 		keys := applyLayout(row, layoutMap)
+		pressed := make([]bool, len(keys))
+		for j, k := range keys {
+			if pressedByEvCode[k.EvCode] || pressedByLabel[k.Label] {
+				pressed[j] = true
+			}
+		}
 		if i == 0 {
 			lines = append(lines, buildTopLine(keys))
 		}
-		lines = append(lines, buildMidLine(keys))
+		lines = append(lines, buildMidLine(keys, pressed))
 		if i < len(rows)-1 {
 			lines = append(lines, buildDivLine(keys))
 		} else {
@@ -50,15 +83,19 @@ func buildTopLine(keys []Key) string {
 	return b.String()
 }
 
-func buildMidLine(keys []Key) string {
+func buildMidLine(keys []Key, pressed []bool) string {
 	var b strings.Builder
 	b.WriteByte('|')
-	for _, k := range keys {
+	for i, k := range keys {
 		label := k.Label
 		if k.DivLabel != "" {
 			label = ""
 		}
-		b.WriteString(fingerStyle[k.Finger].Render(centerLabel(label, k.Width)))
+		if i < len(pressed) && pressed[i] {
+			b.WriteString(fingerActive[k.Finger].Render(centerLabel(label, k.Width)))
+		} else {
+			b.WriteString(fingerStyle[k.Finger].Render(centerLabel(label, k.Width)))
+		}
 		if k.Rightless {
 			b.WriteByte(' ')
 			continue

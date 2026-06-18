@@ -79,6 +79,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 
+	case GlobalKeyMsg:
+		m.pressedKeys[msg.Code] = msg.Down
+
 	case tea.WindowSizeMsg:
 		h, v := listFrameStyle.GetFrameSize()
 		m.layoutList.SetSize(msg.Width-h, msg.Height-v)
