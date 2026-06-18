@@ -26,11 +26,21 @@ func buildKeyboard(size int, layout string, pressedKeys map[uint16]bool) string 
 	shiftHeld := pressedKeys[42] || pressedKeys[54]
 	shiftMap := shiftMaps[layout]
 
+	remapped := make([][]Key, len(rows))
+	for i, row := range rows {
+		remapped[i] = applyLayout(row, layoutMap)
+	}
+
 	evCodeToLabel := make(map[uint16]string)
-	labelCount := make(map[string]int)
 	for _, row := range rows {
 		for _, k := range row {
 			evCodeToLabel[k.EvCode] = k.Label
+		}
+	}
+
+	labelCount := make(map[string]int)
+	for _, row := range remapped {
+		for _, k := range row {
 			labelCount[k.Label]++
 		}
 	}
@@ -53,8 +63,7 @@ func buildKeyboard(size int, layout string, pressedKeys map[uint16]bool) string 
 	}
 
 	var lines []string
-	for i, row := range rows {
-		keys := applyLayout(row, layoutMap)
+	for i, keys := range remapped {
 		pressed := make([]bool, len(keys))
 		for j, k := range keys {
 			if pressedByEvCode[k.EvCode] || pressedByLabel[k.Label] {
@@ -72,7 +81,7 @@ func buildKeyboard(size int, layout string, pressedKeys map[uint16]bool) string 
 			lines = append(lines, buildTopLine(keys))
 		}
 		lines = append(lines, buildMidLine(keys, pressed))
-		if i < len(rows)-1 {
+		if i < len(remapped)-1 {
 			lines = append(lines, buildDivLine(keys))
 		} else {
 			lines = append(lines, buildBotLine(keys))
