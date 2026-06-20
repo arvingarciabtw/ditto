@@ -2,41 +2,41 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
 	lipgloss "charm.land/lipgloss/v2"
 	ansi "github.com/charmbracelet/x/ansi"
-	term "github.com/charmbracelet/x/term"
 )
 
 func (m Model) View() tea.View {
-	s := buildBaseView(m)
+	const overlayWidth = 30
 
-	pw := 30
+	s := base(m)
 
-	if m.showLayoutList || m.showSizeList || m.showQuitConfirm {
-		termW, termH, _ := buildTerminalSize()
+	hasOverlay := m.showLayoutList || m.showSizeList || m.showQuitDialog
 
-		var menu string
-		var ph int
+	if hasOverlay {
+		tw, th := m.terminalWidth, m.terminalHeight
+		var ov string
+		var h int
+
 		switch {
 		case m.showLayoutList:
-			ph = 10
-			menu = layoutListStyle.Width(pw).Height(ph).Render(m.layoutList.View())
+			h = 10
+			ov = overlayBase.BorderForeground(layoutColor).Width(overlayWidth).Height(h).Render(m.layoutList.View())
 		case m.showSizeList:
-			ph = 10
-			menu = sizeListStyle.Width(pw).Height(ph).Render(m.sizeList.View())
-		case m.showQuitConfirm:
-			ph = 8
-			menu = quitConfirmStyle.Width(pw).Height(ph).Render(quitConfirmView(m.quitSelected))
+			h = 10
+			ov = overlayBase.BorderForeground(sizeColor).Width(overlayWidth).Height(h).Render(m.sizeList.View())
+		case m.showQuitDialog:
+			h = 8
+			ov = overlayBase.BorderForeground(quitBorderColor).Width(overlayWidth).Height(h).Render(m.quitDialog.View())
 		}
 
-		x := (termW - pw) / 2
-		y := (termH - ph) / 2
+		x := (tw - overlayWidth) / 2
+		y := (th - h) / 2
 
-		s = buildOverlay(s, menu, x, y)
+		s = overlay(s, ov, x, y)
 	}
 
 	v := tea.NewView(s)
@@ -44,119 +44,98 @@ func (m Model) View() tea.View {
 	return v
 }
 
-func quitConfirmView(selected int) string {
-	const contentW = 22
-	center := lipgloss.NewStyle().Width(contentW).AlignHorizontal(lipgloss.Center)
-
-	var b strings.Builder
-	b.WriteString(center.Render("Are you sure you want to quit?"))
-	b.WriteString("\n\n")
-
-	var leftBtn, rightBtn string
-	if selected == 0 {
-		leftBtn = quitCursorStyle.Render("> Quit")
-		rightBtn = "  Cancel"
-	} else {
-		leftBtn = "  Quit"
-		rightBtn = quitCursorStyle.Render("> Cancel")
+func base(m Model) string {
+	tw, th := m.terminalWidth, m.terminalHeight
+	if tw == 0 || th == 0 {
+		return ""
 	}
 
-	b.WriteString(center.Render(leftBtn + "    " + rightBtn))
-
-	return b.String()
-}
-
-func buildBaseView(m Model) string {
-	termW, termH, err := buildTerminalSize()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v", err)
-		os.Exit(1)
-	}
-
-	keyboard := buildKeyboard(m.activeSize, m.activeLayout, m.pressedKeys)
+	kb := keyboard(m.activeSize, m.activeLayout, m.pressedKeys)
+	kw := 0
 
 	if !m.showAllInfo {
-		return lipgloss.Place(termW, termH, lipgloss.Center, lipgloss.Center, keyboard)
+		return lipgloss.Place(tw, th, lipgloss.Center, lipgloss.Center, kb)
 	}
 
-	keyboardWidth := 0
-	for _, line := range strings.Split(keyboard, "\n") {
-		if w := lipgloss.Width(line); w > keyboardWidth {
-			keyboardWidth = w
+	for line := range strings.SplitSeq(kb, "\n") {
+		if w := lipgloss.Width(line); w > kw {
+			kw = w
 		}
 	}
 
-	infoBar := buildInfoBar(m, keyboardWidth)
-	legendsBar := buildLegendsBar(keyboardWidth)
-	content := legendsBar + "\n" + keyboard + "\n" + infoBar
-	return lipgloss.Place(termW, termH, lipgloss.Center, lipgloss.Center, content)
+	bar := statusBar(m, kw)
+	leg := legends(kw)
+	content := leg + "\n" + kb + "\n" + bar
+
+	return lipgloss.Place(tw, th, lipgloss.Center, lipgloss.Center, content)
 }
 
-func buildLegendsBar(width int) string {
-	type Legend struct {
+func legends(width int) string {
+	type legend struct {
 		name  string
 		style lipgloss.Style
 	}
 
-	legends := []Legend{
-		{name: "pinky", style: fingerStyle[FingerPinky]},
-		{name: "ring", style: fingerStyle[FingerRing]},
-		{name: "middle", style: fingerStyle[FingerMiddle]},
-		{name: "index", style: fingerStyle[FingerIndex]},
-		{name: "thumb", style: fingerStyle[FingerThumb]},
-		{name: "any", style: fingerStyle[FingerAny]},
+	items := []legend{
+		{name: "pinky", style: fingerStyle[pinky]},
+		{name: "ring", style: fingerStyle[ring]},
+		{name: "middle", style: fingerStyle[middle]},
+		{name: "index", style: fingerStyle[index]},
+		{name: "thumb", style: fingerStyle[thumb]},
+		{name: "any", style: fingerStyle[any]},
 	}
 
 	symbol := "•︎"
 
 	sb := strings.Builder{}
-	for _, legend := range legends {
-		fmt.Fprintf(&sb, "%s %s ", legend.style.Render(symbol), infoBarStyle.Render(legend.name))
+	for _, legend := range items {
+		fmt.Fprintf(&sb, "%s %s ", legend.style.Render(symbol), statusBarStyle.Render(legend.name))
 	}
-	legendsBar := sb.String()
+	s := sb.String()
 
-	spacerWidth := width - lipgloss.Width(legendsBar)
-	spacer := strings.Repeat(" ", max(0, spacerWidth))
+	sw := width - lipgloss.Width(s)
+	spacer := strings.Repeat(" ", max(0, sw))
 
-	return lipgloss.JoinHorizontal(lipgloss.Bottom, legendsBar, spacer)
+	return lipgloss.JoinHorizontal(lipgloss.Bottom, s, spacer)
 }
 
-func buildInfoBar(m Model, terminalWidth int) string {
-	activeSize := m.helpModel.Styles.FullKey.Render(fmt.Sprintf("%d%%", m.activeSize))
-	activeLayout := m.helpModel.Styles.FullDesc.Render(" •︎", m.activeLayout)
-	actives := lipgloss.JoinHorizontal(lipgloss.Bottom, activeSize, "", activeLayout)
+func statusBar(m Model, width int) string {
+	size := m.help.Styles.FullKey.Render(fmt.Sprintf("%d%%", m.activeSize))
+	layout := m.help.Styles.FullDesc.Render(" •︎", m.activeLayout)
 
-	commands := m.helpModel.View(commands)
+	actives := lipgloss.JoinHorizontal(lipgloss.Bottom, size, "", layout)
+	bindings := m.help.View(commands)
 
-	spacerWidth := terminalWidth - lipgloss.Width(actives) - lipgloss.Width(commands)
-	spacer := strings.Repeat(" ", max(0, spacerWidth))
+	sw := width - lipgloss.Width(actives) - lipgloss.Width(bindings)
+	spacer := strings.Repeat(" ", max(0, sw))
 
-	return lipgloss.JoinHorizontal(lipgloss.Top, actives, spacer, commands)
+	return lipgloss.JoinHorizontal(lipgloss.Top, actives, spacer, bindings)
 }
 
-func buildOverlay(bg string, menu string, x, y int) string {
+func overlay(bg string, ov string, x, y int) string {
 	bgLines := strings.Split(bg, "\n")
-	popupLines := strings.Split(menu, "\n")
-	for py, pl := range popupLines {
-		by := y + py
+	overlayLines := strings.Split(ov, "\n")
+
+	for oy, ol := range overlayLines {
+		by := y + oy
 		if by < 0 || by >= len(bgLines) {
 			continue
 		}
 		bl := bgLines[by]
 		bgW := ansi.StringWidth(bl)
-		pw := ansi.StringWidth(pl)
+		w := ansi.StringWidth(ol)
+
+		if x < 0 || x >= bgW {
+			continue
+		}
 
 		prefix := ansi.Cut(bl, 0, x)
 		var suffix string
-		if x+pw < bgW {
-			suffix = ansi.Cut(bl, x+pw, bgW)
+		if x+w < bgW {
+			suffix = ansi.Cut(bl, x+w, bgW)
 		}
-		bgLines[by] = prefix + pl + suffix
+		bgLines[by] = prefix + ol + suffix
 	}
-	return strings.Join(bgLines, "\n")
-}
 
-func buildTerminalSize() (int, int, error) {
-	width, height, err := term.GetSize(uintptr(os.Stdout.Fd()))
-	return width, height, err
+	return strings.Join(bgLines, "\n")
 }

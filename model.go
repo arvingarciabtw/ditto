@@ -7,32 +7,29 @@ import (
 )
 
 type Model struct {
-	layoutList      listModel
-	sizeList        listModel
-	activeLayout    string
-	activeSize      int
-	showLayoutList  bool
-	showSizeList    bool
-	showQuitConfirm bool
-	quitSelected    int
-	showAllInfo     bool
-	helpModel       help.Model
+	activeLayout   string
+	activeSize     int
+	help           help.Model
+	layoutList     listModel
+	sizeList       listModel
+	quitDialog     dialogModel
+	showLayoutList bool
+	showSizeList   bool
+	showQuitDialog bool
+	showAllInfo    bool
 	pressedKeys     map[uint16]bool
+	terminalWidth   int
+	terminalHeight  int
 }
 
-type GlobalKeyMsg struct {
-	Code uint16
-	Down bool
-}
-
-func getInitModel() Model {
+func initModel() Model {
 	cfg := loadConfig()
+
 	layoutList := listModel{
-		items:       keyboardLayoutItems,
+		items:       layoutListItems,
 		selected:    0,
 		title:       "Layouts",
-		titleStyle:  layoutTitleStyle,
-		cursorStyle: layoutCursorStyle,
+		accentColor: layoutColor,
 	}
 	for i, item := range layoutList.items {
 		if item == cfg.ActiveLayout {
@@ -40,12 +37,12 @@ func getInitModel() Model {
 			break
 		}
 	}
+
 	sizeList := listModel{
-		items:       keyboardSizeItems,
+		items:       layoutSizeItems,
 		selected:    0,
 		title:       "Sizes",
-		titleStyle:  sizeTitleStyle,
-		cursorStyle: sizeCursorStyle,
+		accentColor: sizeColor,
 	}
 	for i, item := range sizeList.items {
 		if item == fmt.Sprintf("%d%%", cfg.ActiveSize) {
@@ -53,26 +50,29 @@ func getInitModel() Model {
 			break
 		}
 	}
+
 	initModel := Model{
 		layoutList:     layoutList,
 		sizeList:       sizeList,
+		quitDialog:     dialogModel{accentColor: quitColor},
 		activeLayout:   cfg.ActiveLayout,
 		activeSize:     cfg.ActiveSize,
 		showLayoutList: false,
 		showSizeList:   false,
 		showAllInfo:    true,
-		helpModel:      help.New(),
+		help:           help.New(),
 		pressedKeys:    make(map[uint16]bool),
 	}
-	initModel.helpModel.Styles = help.Styles{
-		FullKey:        infoBarStyle,
-		FullDesc:       infoBarStyle,
-		FullSeparator:  infoBarStyle,
-		ShortKey:       infoBarStyle,
-		ShortDesc:      infoBarStyle,
-		ShortSeparator: infoBarStyle,
-		Ellipsis:       infoBarStyle,
+	initModel.help.Styles = help.Styles{
+		FullKey:        statusBarStyle,
+		FullDesc:       statusBarStyle,
+		FullSeparator:  statusBarStyle,
+		ShortKey:       statusBarStyle,
+		ShortDesc:      statusBarStyle,
+		ShortSeparator: statusBarStyle,
+		Ellipsis:       statusBarStyle,
 	}
+	initModel.help.FullSeparator = initModel.help.ShortSeparator
 
 	return initModel
 }
