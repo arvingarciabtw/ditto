@@ -1,4 +1,4 @@
-package main
+package keyboard
 
 var layouts = map[string]map[string]string{
 	"qwerty": nil,
@@ -101,4 +101,39 @@ var azertyShift = map[string]string{
 	"(": "5", "-": "6", "È": "7", "_": "8",
 	"Ç": "9", "À": "0", ")": "°",
 	"^": "¨", "$": "£",
+}
+
+var BuiltinLayoutNames = []string{
+	"qwerty",
+	"dvorak",
+	"colemak",
+	"colemak-dh",
+	"workman",
+	"azerty",
+}
+
+var LayoutListItems []string
+
+var LayoutSizeItems = []string{
+	"60%",
+	"65%",
+	"75%",
+	"80%",
+	"96%",
+	"100%",
+}
+
+func init() {
+	seen := make(map[string]bool, len(BuiltinLayoutNames))
+	LayoutListItems = make([]string, 0, len(layouts))
+	for _, name := range BuiltinLayoutNames {
+		LayoutListItems = append(LayoutListItems, name)
+		seen[name] = true
+	}
+	for name := range layouts {
+		if !seen[name] {
+			LayoutListItems = append(LayoutListItems, name)
+			seen[name] = true
+		}
+	}
 }

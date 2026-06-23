@@ -1,12 +1,15 @@
-package main
+// Package keyboard renders the ASCII keyboard visualization and manages
+// layout remapping (qwerty, dvorak, colemak, etc.) and custom layout files.
+package keyboard
 
 import (
 	"strings"
 
+	lipgloss "charm.land/lipgloss/v2"
 	ansi "github.com/charmbracelet/x/ansi"
 )
 
-func keyboard(size int, layout string, pressedKeys map[uint16]bool) string {
+func Keyboard(size int, layout string, pressedKeys map[uint16]bool, fingerStyle, fingerActive map[Finger]lipgloss.Style) string {
 	rows, ok := sizes[size]
 	if !ok {
 		return ""
@@ -73,9 +76,9 @@ func keyboard(size int, layout string, pressedKeys map[uint16]bool) string {
 		if i == 0 {
 			lines = append(lines, topLine(keys))
 		}
-		lines = append(lines, midLine(keys, pressed))
+		lines = append(lines, midLine(keys, pressed, fingerStyle, fingerActive))
 		if i < len(remapped)-1 {
-			lines = append(lines, divLine(keys))
+			lines = append(lines, divLine(keys, fingerStyle))
 		} else {
 			lines = append(lines, botLine(keys))
 		}
@@ -106,7 +109,7 @@ func topLine(keys []key) string {
 	return b.String()
 }
 
-func midLine(keys []key, pressed []bool) string {
+func midLine(keys []key, pressed []bool, fingerStyle, fingerActive map[Finger]lipgloss.Style) string {
 	var b strings.Builder
 	for i, k := range keys {
 		label := k.label
@@ -148,7 +151,7 @@ func midLine(keys []key, pressed []bool) string {
 	return b.String()
 }
 
-func divLine(keys []key) string {
+func divLine(keys []key, fingerStyle map[Finger]lipgloss.Style) string {
 	var b strings.Builder
 	b.WriteByte('|')
 	for _, k := range keys {

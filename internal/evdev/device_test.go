@@ -1,4 +1,4 @@
-package main
+package evdev
 
 import (
 	"os"
@@ -44,12 +44,8 @@ func TestReadUeventFile_empty(t *testing.T) {
 }
 
 func TestCheckInputGroup_notInGroup(t *testing.T) {
-	// In test environments, the "input" group may not exist or the test
-	// runner may not be in it. We just verify the function runs.
-	err := checkInputGroup()
+	err := CheckInputGroup()
 	if err != nil {
-		// Error is expected if not in input group or group doesn't exist
-		// Just verify it returns a non-nil error without panicking
 		t.Logf("not in input group (expected in most test environments): %v", err)
 	}
 }

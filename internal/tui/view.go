@@ -1,4 +1,4 @@
-package main
+package tui
 
 import (
 	"fmt"
@@ -7,6 +7,9 @@ import (
 	tea "charm.land/bubbletea/v2"
 	lipgloss "charm.land/lipgloss/v2"
 	ansi "github.com/charmbracelet/x/ansi"
+
+	"github.com/arvingarciabtw/ditto/internal/keyboard"
+	"github.com/arvingarciabtw/ditto/internal/tui/components"
 )
 
 func (m Model) View() tea.View {
@@ -24,13 +27,13 @@ func (m Model) View() tea.View {
 		switch {
 		case m.showLayoutList:
 			h = 10
-			ov = overlayBase.BorderForeground(layoutColor).Width(overlayWidth).Height(h).Render(m.layoutList.View())
+			ov = OverlayBase.BorderForeground(LayoutColor).Width(overlayWidth).Height(h).Render(m.layoutList.View(StatusBarStyle))
 		case m.showSizeList:
 			h = 10
-			ov = overlayBase.BorderForeground(sizeColor).Width(overlayWidth).Height(h).Render(m.sizeList.View())
+			ov = OverlayBase.BorderForeground(SizeColor).Width(overlayWidth).Height(h).Render(m.sizeList.View(StatusBarStyle))
 		case m.showQuitDialog:
 			h = 8
-			ov = overlayBase.BorderForeground(quitBorderColor).Width(overlayWidth).Height(h).Render(m.quitDialog.View())
+			ov = OverlayBase.BorderForeground(QuitBorderColor).Width(overlayWidth).Height(h).Render(m.quitDialog.View())
 		}
 
 		x := (tw - overlayWidth) / 2
@@ -50,7 +53,7 @@ func base(m Model) string {
 		return ""
 	}
 
-	kb := keyboard(m.activeSize, m.activeLayout, m.pressedKeys)
+	kb := keyboard.Keyboard(m.activeSize, m.activeLayout, m.pressedKeys, FingerStyle, FingerActive)
 	kh := strings.Count(kb, "\n") + 1
 	kw := 0
 	for line := range strings.SplitSeq(kb, "\n") {
@@ -80,10 +83,10 @@ func base(m Model) string {
 }
 
 func warning(tw, th, nw, nh int) string {
-	header := lipgloss.NewStyle().Foreground(quitColor).Render("Terminal size too small:")
-	size := warningStyle.Render(fmt.Sprintf("Width = %d  Height = %d", tw, th))
-	need := warningAccent.Render("Needed for current config:")
-	needSize := warningStyle.Render(fmt.Sprintf("Width = %d  Height = %d", nw, nh))
+	header := lipgloss.NewStyle().Foreground(QuitColor).Render("Terminal size too small:")
+	size := WarningStyle.Render(fmt.Sprintf("Width = %d  Height = %d", tw, th))
+	need := WarningAccent.Render("Needed for current config:")
+	needSize := WarningStyle.Render(fmt.Sprintf("Width = %d  Height = %d", nw, nh))
 
 	lines := []string{header, size, "", need, needSize}
 	return lipgloss.Place(tw, th, lipgloss.Center, lipgloss.Center, strings.Join(lines, "\n"))
@@ -96,19 +99,19 @@ func legends(width int) string {
 	}
 
 	items := []legend{
-		{name: "pinky", style: fingerStyle[pinky]},
-		{name: "ring", style: fingerStyle[ring]},
-		{name: "middle", style: fingerStyle[middle]},
-		{name: "index", style: fingerStyle[index]},
-		{name: "thumb", style: fingerStyle[thumb]},
-		{name: "any", style: fingerStyle[any]},
+		{name: "pinky", style: FingerStyle[keyboard.Pinky]},
+		{name: "ring", style: FingerStyle[keyboard.Ring]},
+		{name: "middle", style: FingerStyle[keyboard.Middle]},
+		{name: "index", style: FingerStyle[keyboard.Index]},
+		{name: "thumb", style: FingerStyle[keyboard.Thumb]},
+		{name: "any", style: FingerStyle[keyboard.Any]},
 	}
 
 	symbol := "•︎"
 
 	sb := strings.Builder{}
 	for _, legend := range items {
-		fmt.Fprintf(&sb, "%s %s ", legend.style.Render(symbol), statusBarStyle.Render(legend.name))
+		fmt.Fprintf(&sb, "%s %s ", legend.style.Render(symbol), StatusBarStyle.Render(legend.name))
 	}
 	s := sb.String()
 
@@ -119,11 +122,11 @@ func legends(width int) string {
 }
 
 func statusBar(m Model, width int) string {
-	size := statusBarStyle.Render(fmt.Sprintf("%d%%", m.activeSize))
-	layout := statusBarStyle.Render(" •︎", m.activeLayout)
+	size := StatusBarStyle.Render(fmt.Sprintf("%d%%", m.activeSize))
+	layout := StatusBarStyle.Render(" •︎", m.activeLayout)
 
 	actives := lipgloss.JoinHorizontal(lipgloss.Bottom, size, "", layout)
-	bindings := renderBindings(commands)
+	bindings := renderBindings(components.Commands)
 
 	sw := width - lipgloss.Width(actives) - lipgloss.Width(bindings)
 	spacer := strings.Repeat(" ", max(0, sw))
@@ -131,11 +134,11 @@ func statusBar(m Model, width int) string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, actives, spacer, bindings)
 }
 
-func renderBindings(c bindings) string {
+func renderBindings(c components.Bindings) string {
 	parts := []string{
-		statusBarStyle.Render(c.Layout.Help().Key) + " " + statusBarStyle.Render(c.Layout.Help().Desc),
-		statusBarStyle.Render(c.Size.Help().Key) + " " + statusBarStyle.Render(c.Size.Help().Desc),
-		statusBarStyle.Render(c.HideKey.Help().Key) + " " + statusBarStyle.Render(c.HideKey.Help().Desc),
+		StatusBarStyle.Render(c.Layout.Help().Key) + " " + StatusBarStyle.Render(c.Layout.Help().Desc),
+		StatusBarStyle.Render(c.Size.Help().Key) + " " + StatusBarStyle.Render(c.Size.Help().Desc),
+		StatusBarStyle.Render(c.HideKey.Help().Key) + " " + StatusBarStyle.Render(c.HideKey.Help().Desc),
 	}
 	return strings.Join(parts, "  ")
 }

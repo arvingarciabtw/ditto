@@ -1,10 +1,12 @@
-package main
+package keyboard
 
 import (
 	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/arvingarciabtw/ditto/internal/config"
 )
 
 type customLayoutFile struct {
@@ -17,7 +19,7 @@ func init() {
 	if err != nil {
 		return
 	}
-	dir := filepath.Join(cfgDir, configDirName, "layouts")
+	dir := filepath.Join(cfgDir, config.DirName, "layouts")
 
 	entries, err := os.ReadDir(dir)
 	if err != nil {

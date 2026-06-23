@@ -1,16 +1,16 @@
-package main
+package components
 
 import (
 	bkey "charm.land/bubbles/v2/key"
 )
 
-type bindings struct {
+type Bindings struct {
 	Layout  bkey.Binding
 	Size    bkey.Binding
 	HideKey bkey.Binding
 }
 
-var commands = bindings{
+var Commands = Bindings{
 	Layout: bkey.NewBinding(
 		bkey.WithKeys("ctrl+shift+l"),
 		bkey.WithHelp("^l", "layout"),

@@ -1,4 +1,6 @@
-package main
+// Package config persists the active layout and size settings to
+// the user's config directory (~/.config/ditto/config.json).
+package config
 
 import (
 	"encoding/json"
@@ -6,33 +8,33 @@ import (
 	"path/filepath"
 )
 
-type config struct {
+type Config struct {
 	ActiveLayout string `json:"active_layout"`
 	ActiveSize   int    `json:"active_size"`
 }
 
-const configDirName = "ditto"
+const DirName = "ditto"
 
 func configPath() (string, error) {
 	cfgDir, err := os.UserConfigDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(cfgDir, configDirName, "config.json"), nil
+	return filepath.Join(cfgDir, DirName, "config.json"), nil
 }
 
-func loadConfig() config {
+func LoadConfig() Config {
 	path, err := configPath()
 	if err != nil {
-		return config{ActiveLayout: "qwerty", ActiveSize: 75}
+		return Config{ActiveLayout: "qwerty", ActiveSize: 75}
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return config{ActiveLayout: "qwerty", ActiveSize: 75}
+		return Config{ActiveLayout: "qwerty", ActiveSize: 75}
 	}
-	var cfg config
+	var cfg Config
 	if err := json.Unmarshal(data, &cfg); err != nil {
-		return config{ActiveLayout: "qwerty", ActiveSize: 75}
+		return Config{ActiveLayout: "qwerty", ActiveSize: 75}
 	}
 	if cfg.ActiveLayout == "" {
 		cfg.ActiveLayout = "qwerty"
@@ -43,7 +45,7 @@ func loadConfig() config {
 	return cfg
 }
 
-func saveConfig(cfg config) {
+func SaveConfig(cfg Config) {
 	path, err := configPath()
 	if err != nil {
 		return

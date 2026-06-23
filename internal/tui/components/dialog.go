@@ -1,4 +1,4 @@
-package main
+package components
 
 import (
 	"image/color"
@@ -8,37 +8,37 @@ import (
 	lipgloss "charm.land/lipgloss/v2"
 )
 
-type dialogModel struct {
-	selected    int
-	accentColor color.Color
+type DialogModel struct {
+	Selected    int
+	AccentColor color.Color
 }
 
-type dialogAction int
+type DialogAction int
 
 const (
-	dialogNone dialogAction = iota
-	dialogConfirm
-	dialogCancel
+	DialogNone DialogAction = iota
+	DialogConfirm
+	DialogCancel
 )
 
-func (d dialogModel) Update(msg tea.KeyPressMsg) (dialogModel, dialogAction) {
+func (d DialogModel) Update(msg tea.KeyPressMsg) (DialogModel, DialogAction) {
 	switch msg.String() {
 	case "up", "k", "left":
-		d.selected = 0
+		d.Selected = 0
 	case "down", "j", "right":
-		d.selected = 1
+		d.Selected = 1
 	case "enter":
-		if d.selected == 0 {
-			return d, dialogConfirm
+		if d.Selected == 0 {
+			return d, DialogConfirm
 		}
-		return d, dialogCancel
+		return d, DialogCancel
 	case "q", "esc":
-		return d, dialogCancel
+		return d, DialogCancel
 	}
-	return d, dialogNone
+	return d, DialogNone
 }
 
-func (d dialogModel) View() string {
+func (d DialogModel) View() string {
 	const contentW = 22
 	center := lipgloss.NewStyle().Width(contentW).AlignHorizontal(lipgloss.Center)
 
@@ -46,9 +46,9 @@ func (d dialogModel) View() string {
 	b.WriteString(center.Render("Are you sure you want to quit?"))
 	b.WriteString("\n\n")
 
-	accent := lipgloss.NewStyle().Foreground(d.accentColor)
+	accent := lipgloss.NewStyle().Foreground(d.AccentColor)
 	var leftBtn, rightBtn string
-	if d.selected == 0 {
+	if d.Selected == 0 {
 		leftBtn = accent.Render("> Quit")
 		rightBtn = "  Cancel"
 	} else {

@@ -1,4 +1,6 @@
-package main
+// Package evdev discovers and reads raw keyboard input events from evdev
+// devices at /dev/input/event*, classifying them via udev properties.
+package evdev
 
 import (
 	"fmt"
@@ -12,14 +14,14 @@ import (
 	evdev "github.com/gvalkov/golang-evdev"
 )
 
-type globalKeyMsg struct {
-	code uint16
-	down bool
+type KeyMsg struct {
+	Code uint16
+	Down bool
 }
 
 const maxEventDevices = 32
 
-func devices() ([]*evdev.InputDevice, error) {
+func Devices() ([]*evdev.InputDevice, error) {
 	var result []*evdev.InputDevice
 	sawPermissionError := false
 
@@ -55,7 +57,7 @@ func isKeyboardDevice(eventNum int) bool {
 	return checkUdevadm(eventNum)
 }
 
-func listenToKeyboard(p *tea.Program, dev *evdev.InputDevice) {
+func ListenToKeyboard(p *tea.Program, dev *evdev.InputDevice) {
 	defer dev.File.Close()
 
 	for {
@@ -65,9 +67,9 @@ func listenToKeyboard(p *tea.Program, dev *evdev.InputDevice) {
 		}
 		for _, ev := range events {
 			if ev.Type == evdev.EV_KEY {
-				p.Send(globalKeyMsg{
-					code: uint16(ev.Code),
-					down: ev.Value != 0,
+				p.Send(KeyMsg{
+					Code: uint16(ev.Code),
+					Down: ev.Value != 0,
 				})
 			}
 		}
@@ -99,7 +101,7 @@ func checkUdevadm(eventNum int) bool {
 	return strings.Contains(string(out), "ID_INPUT_KEYBOARD=1")
 }
 
-func checkInputGroup() error {
+func CheckInputGroup() error {
 	groups, err := os.Getgroups()
 	if err != nil {
 		return err
@@ -120,7 +122,7 @@ func checkInputGroup() error {
 	return fmt.Errorf("user is not in the input group")
 }
 
-func printDeviceError(err error) {
+func PrintDeviceError(err error) {
 	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 
 	exe, exeErr := os.Executable()

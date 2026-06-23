@@ -1,10 +1,14 @@
-package main
+package tui
 
 import (
 	"strconv"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
+
+	"github.com/arvingarciabtw/ditto/internal/config"
+	"github.com/arvingarciabtw/ditto/internal/evdev"
+	"github.com/arvingarciabtw/ditto/internal/tui/components"
 )
 
 func (m Model) Init() tea.Cmd {
@@ -15,11 +19,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case tea.KeyPressMsg:
-		/*
-			These shortcuts bypass the overlay dispatch below so the user
-			can switch between layout and size lists directly, without
-			having to close the current overlay first.
-		*/
 		switch msg.String() {
 		case "ctrl+shift+l":
 			m.showLayoutList = !m.showLayoutList
@@ -41,8 +40,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			return m.handleGlobalKeys(msg)
 		}
-	case globalKeyMsg:
-		m.pressedKeys[msg.code] = msg.down
+	case evdev.KeyMsg:
+		m.pressedKeys[msg.Code] = msg.Down
 	case tea.WindowSizeMsg:
 		m.terminalWidth = msg.Width
 		m.terminalHeight = msg.Height
@@ -52,16 +51,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) handleLayoutListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
-	var action listAction
+	var action components.ListAction
 	m.layoutList, action = m.layoutList.Update(msg)
 
 	switch action {
 
-	case listConfirm:
-		m.activeLayout = strings.ToLower(m.layoutList.items[m.layoutList.selected])
+	case components.ListConfirm:
+		m.activeLayout = strings.ToLower(m.layoutList.Items[m.layoutList.Selected])
 		m.showLayoutList = false
-		saveConfig(config{ActiveLayout: m.activeLayout, ActiveSize: m.activeSize})
-	case listCancel:
+		config.SaveConfig(config.Config{ActiveLayout: m.activeLayout, ActiveSize: m.activeSize})
+	case components.ListCancel:
 		m.showLayoutList = false
 	}
 
@@ -69,19 +68,19 @@ func (m Model) handleLayoutListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) 
 }
 
 func (m Model) handleSizeListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
-	var action listAction
+	var action components.ListAction
 	m.sizeList, action = m.sizeList.Update(msg)
 
 	switch action {
 
-	case listConfirm:
-		sizeStr := strings.TrimSuffix(m.sizeList.items[m.sizeList.selected], "%")
+	case components.ListConfirm:
+		sizeStr := strings.TrimSuffix(m.sizeList.Items[m.sizeList.Selected], "%")
 		if size, err := strconv.Atoi(sizeStr); err == nil {
 			m.activeSize = size
 		}
 		m.showSizeList = false
-		saveConfig(config{ActiveLayout: m.activeLayout, ActiveSize: m.activeSize})
-	case listCancel:
+		config.SaveConfig(config.Config{ActiveLayout: m.activeLayout, ActiveSize: m.activeSize})
+	case components.ListCancel:
 		m.showSizeList = false
 	}
 
@@ -89,14 +88,14 @@ func (m Model) handleSizeListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) handleQuitDialogUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
-	var action dialogAction
+	var action components.DialogAction
 	m.quitDialog, action = m.quitDialog.Update(msg)
 
 	switch action {
 
-	case dialogConfirm:
+	case components.DialogConfirm:
 		return m, tea.Quit
-	case dialogCancel:
+	case components.DialogCancel:
 		m.showQuitDialog = false
 	}
 
@@ -110,7 +109,7 @@ func (m Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		m.showAllInfo = !m.showAllInfo
 	case "q", "esc":
 		m.showQuitDialog = true
-		m.quitDialog.selected = 0
+		m.quitDialog.Selected = 0
 	case "ctrl+c":
 		return m, tea.Quit
 	}
