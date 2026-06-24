@@ -22,6 +22,7 @@ type Model struct {
 	showQuitDialog bool
 	showAllInfo    bool
 	pressedKeys    map[uint16]bool
+	capsLock       bool
 	terminalWidth  int
 	terminalHeight int
 }

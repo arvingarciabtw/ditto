@@ -51,10 +51,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case evdev.KeyMsg:
 		m.pressedKeys[msg.Code] = msg.Down
+		if msg.Code == 58 && msg.Down {
+			m.capsLock = !m.capsLock
+		}
 	case tea.WindowSizeMsg:
 		m.terminalWidth = msg.Width
 		m.terminalHeight = msg.Height
 	}
+
+	m.pressedKeys[58] = m.pressedKeys[58] || m.capsLock
 
 	return m, nil
 }
