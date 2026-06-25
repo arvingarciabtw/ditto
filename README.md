@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/d90b06fa-f481-427c-ac83-51cf1966ee39" height="25" alt="ditto logo"/>
+  <img src="https://github.com/user-attachments/assets/97abc570-10c9-4f0a-bf7f-2e80b4a84d17" height="60" alt="ditto logo"/>
 
   <br>
 
@@ -10,9 +10,9 @@
 
 </div>
 
-<img width="1280" height="685" alt="ditto demo" src="https://github.com/user-attachments/assets/3946d945-e98f-4304-ba86-2129151ecdad" />
+<img width="1280" height="685" alt="ditto demo" src="https://github.com/user-attachments/assets/bf71030a-eacd-4eaa-9be5-06adb86de192" />
 
-Ditto is an ASCII keyboard visualizer in the terminal that captures global key presses. Even if you're outside the terminal session, the visualizer will still keep updating. Hit the repo with a star if you like this little interactive eye candy app! ⭐
+Ditto is a system-wide ASCII keyboard visualizer that captures global key presses. Even if you're outside the terminal session, the visualizer will still keep updating. Hit the repo with a star if you like this little interactive eye candy app! ⭐
 
 ## Table of Contents
 
@@ -30,13 +30,13 @@ Ditto is an ASCII keyboard visualizer in the terminal that captures global key p
 
 ## Motivation
 
-If you've seen rices over at places like [r/unixp\*rn](https://www.reddit.com/r/unixporn/), every now and then you'll see some developer layouts where you'd have a code editor, then some eye candy to fill up dead space. I thought it would be nice to have an interactive keyboard visualizer that updates no matter where you are active.
+If you've seen rices over at places like [r/unixp\*rn](https://www.reddit.com/r/unixporn/), every now and then you'll see some developer layouts where you'd have a code editor, then some eye candy to fill up dead space. I thought it would be nice to have an interactive keyboard visualizer that updates no matter which window has focus.
 
-Practically, it could have a niche use as well, like sharing your screen to other people so ~~you can flex your Vim skills~~ they can see the keys you press as you navigate through your workflow.
+Practically, it could have a niche use as well, like sharing your screen with other people so ~~you can flex your Vim skills~~ they can see the keys you press as you navigate through your workflow.
 
 ## Installation
 
-Installing this program is currently only available through Go. So make sure you have Go installed first:
+I recommend installing this program through Go. So make sure you have Go installed first:
 
 ```bash
 # Check if Go is installed
@@ -62,6 +62,8 @@ cd ditto
 go build
 ```
 
+You can also install it from the AUR, though note that this one isn't maintained by me. You can see the [package](https://aur.archlinux.org/packages/ditto) here. For now, I recommend installing it with Go.
+
 ## Permissions
 
 > [!IMPORTANT]
@@ -75,7 +77,7 @@ go build
 
 ## Usage
 
-There's only two main commands you need to be aware of: `ctrl+shift+l` and `ctrl+shift+s`. The former opens up the layout list while the latter opens up the size list.
+There are three commands you need to be aware of: `l`, `s`, and `d`. Pressing `l` opens up the layout list, `s` opens up the size list, and `d` alternates between the ANSI standard and ISO standard.
 
 ### Lists
 
@@ -91,13 +93,15 @@ There's only two main commands you need to be aware of: `ctrl+shift+l` and `ctrl
 | Layout       | Description                |
 | ------------ | -------------------------- |
 | `qwerty`     | Standard US layout         |
+| `qwerty uk`  | Standard UK layout         |
 | `dvorak`     | Dvorak simplified          |
+| `dvorak uk`  | Dvorak UK layout           |
 | `colemak`    | Colemak modern alternative |
 | `colemak-dh` | Colemak with angle mod     |
 | `workman`    | Workman layout             |
 | `azerty`     | French AZERTY              |
 
-Although, if you wish, you can add your own key maps for your custom layouts!
+If you wish, you can add your own key maps for your custom layouts!
 
 ### Custom Layouts
 
@@ -132,16 +136,19 @@ Each `.json` file becomes a named layout (the filename without extension). Forma
 - map required — maps physical key labels → remapped labels (same format as the built-in layouts in layouts.go)
 - shift optional — shifted state mappings; falls back to US QWERTY shift if omitted
 
-The layout will automatically appear in the layout list (ctrl+shift+l) the next time you launch Ditto.
+The layout will automatically appear in the layout list the next time you launch Ditto.
 
 ## Roadmap
 
 Some features I'm thinking of implementing in the future, not in order.
 
+- [x] UK layouts
+- [x] ANSI and ISO standards
 - [ ] Windows support
 - [ ] Mac support
 - [ ] Custom layouts via TUI
 - [ ] Custom finger zones
+- [ ] Additional niche standards (JIS, ABNT, KS)
 
 ## Contributing
 
@@ -159,20 +166,21 @@ When writing my commit messages, I follow the [Conventional Commits](https://www
 
 ## Acknowledgments
 
-Here are a list of useful resources that I always refer to when developing:
+Here is a list of useful resources that I always refer to when developing:
 
 - [effective go](https://go.dev/doc/effective_go)
 - [bubble tea docs](https://pkg.go.dev/charm.land/bubbletea/v2)
 - [lipgloss docs](https://pkg.go.dev/charm.land/lipgloss/v2)
-- [evdev](https://pkg.go.dev/github.com/gvalkov/golang-evdev)
+- [evdev docs](https://pkg.go.dev/github.com/gvalkov/golang-evdev)
 - [input interfaces](https://www.kernel.org/doc/html/latest/input/input.html)
 - [setcap](https://man.archlinux.org/man/setcap.8.en)
+- [capabilities](https://man7.org/linux/man-pages/man7/capabilities.7.html)
 
 ## Note on AI
 
-I'm only a beginner programmer (and I've only recently picked up Go), so I'm well aware that the codebase is subpar. I still don't have an eye for what is considered idiomatic Go or not. I've used AI to assist me with making this project, especially in cases where I got really stuck, but rest assured I also tried my best in reviewing it.
+I'm only a beginner programmer and I've only recently picked up Go, so I'm well aware that the codebase is subpar. I still don't have an eye for what is considered idiomatic Go or not. I've used AI to assist me with making this project, especially in cases where I got really stuck, but rest assured I also tried my best in reviewing it.
 
-I'm always eager to learn and improve, so I'd be happy to hear any improvements. If you'd like to contribute, you can refer to the [Contributing](#contributing) section above.
+I'm always eager to learn and improve, so I'd be happy to hear any feedback or suggestions. If you'd like to contribute, you can refer to the [Contributing](#contributing) section above.
 
 ## License
 
