@@ -10,9 +10,23 @@
 
 </div>
 
-<img width="1280" height="685" alt="ditto demo" src="https://github.com/user-attachments/assets/94a25317-e23e-4ace-8ef0-b412f541791a" />
+<img width="1280" height="683" alt="ditto v1.0.3 demo" src="https://github.com/user-attachments/assets/f6cda363-045b-4313-9ae2-10dfda03ced8" />
 
 Ditto is a system-wide ASCII keyboard visualizer that captures global key presses. Even if you're outside the terminal session, the visualizer will still keep updating. Hit the repo with a star if you like this little interactive eye candy app! ⭐
+
+## Showcase
+
+|                                              60%                                              |                                              65%                                              |
+| :-------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
+| ![60percent](https://github.com/user-attachments/assets/2001a816-b8d7-460b-b63f-6168cb5150e6) | ![65percent](https://github.com/user-attachments/assets/6b445af6-f482-4ecc-ac04-3e36666f194f) |
+
+|                                              75%                                              |                                              80%                                              |
+| :-------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
+| ![75percent](https://github.com/user-attachments/assets/738c2d9d-f4d7-4e0a-a06b-d99433945350) | ![80percent](https://github.com/user-attachments/assets/6e5cef0f-6498-4a1c-981e-15f67a3bcb06) |
+
+|                                              96%                                              |                                              100%                                              |
+| :-------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: |
+| ![96percent](https://github.com/user-attachments/assets/6fd42732-de0e-4038-8beb-595bf3c0f771) | ![100percent](https://github.com/user-attachments/assets/4a916cb2-c433-4ac3-b9c7-05c6e666610b) |
 
 ## Table of Contents
 
@@ -30,13 +44,15 @@ Ditto is a system-wide ASCII keyboard visualizer that captures global key presse
 
 ## Motivation
 
-If you've seen rices over at places like [r/unixp\*rn](https://www.reddit.com/r/unixporn/), every now and then you'll see some developer layouts where you'd have a code editor, then some eye candy to fill up dead space. I thought it would be nice to have an interactive keyboard visualizer that updates no matter which window has focus.
+If you've seen rices over at places like [r/unixp\*rn](https://www.reddit.com/r/unixporn/), every now and then you'll see some developer layouts where you'd have a code editor, then some eye candy to fill up dead space. I thought it would be nice to have some eye candy that was interactive.
+
+And so, I thought a keyboard visualizer that updates no matter which window has focus would be pretty neat. You code away on your editor, and the ASCII keyboard on the corner lights up!
 
 Practically, it could have a niche use as well, like sharing your screen with other people so ~~you can flex your Vim skills~~ they can see the keys you press as you navigate through your workflow.
 
 ## Installation
 
-I recommend installing this program through Go. So make sure you have Go installed first:
+For now, this program is only installed through Go. So make sure you have Go installed first:
 
 ```bash
 # Check if Go is installed
@@ -62,22 +78,25 @@ cd ditto
 go build -o ditto ./cmd/ditto/
 ```
 
-You can also install it from the AUR, though note that this one isn't maintained by me. You can see the [package](https://aur.archlinux.org/packages/ditto) here. For now, I recommend installing it with Go.
-
 ## Permissions
 
 > [!IMPORTANT]
-> Ditto reads raw evdev events from /dev/input/event\*, which isn't readable by normal users by default. Grant the binary read access with:
+> Ditto reads raw evdev events from /dev/input/event\*, which isn't readable by normal users by default. You can grant the binary read access with:
 >
 > `sudo setcap cap_dac_read_search=ep "$(which ditto)"`
 >
-> This adds a single Linux capability (`cap_dac_read_search`) to the binary — it only bypasses the DAC read check on `/dev/input/event*`, nothing else. The binary still runs as your user, not as root. Re-run after rebuilding. Revoke anytime with:
+> This adds a single Linux capability (`cap_dac_read_search`) to the binary, so it only bypasses the DAC read check on `/dev/input/event*`, nothing else. The binary still runs as your user, not as root. You'd need to re-run it if you rebuilt the binary. You can revoke anytime with:
 >
 > `sudo setcap -r "$(which ditto)"`
+>
+> To my knowledge, this is the safer way of granting permissions. You could technically add the user to the input group and it would work, but this is more unsafe since this would grant full control over all devices under `/dev/input`.
 
 ## Usage
 
-There are three commands you need to be aware of: `l`, `s`, and `d`. Pressing `l` opens up the layout list, `s` opens up the size list, and `d` alternates between the ANSI standard and ISO standard.
+There are four commands you need to be aware of: `l`, `s`, `d`, and `c`. Pressing `l` opens up the layout list, `s` opens up the size list, and `d` opens up the standard list. If your active standard is either JIS or KS, you can press `c` to toggle between the Latin alphabet and the standard's logograms.
+
+> [!NOTE]
+> For the JIS and KS standards to render the logograms properly, you need to have a compatible font installed in your system. I recommend Noto Sans CJK JP and Noto Sans CJK KR.
 
 ### Lists
 
@@ -133,8 +152,8 @@ Each `.json` file becomes a named layout (the filename without extension). Forma
 }
 ```
 
-- map required — maps physical key labels → remapped labels (same format as the built-in layouts in layouts.go)
-- shift optional — shifted state mappings; falls back to US QWERTY shift if omitted
+- **map is required** — maps physical key labels → remapped labels (same format as the built-in layouts in layouts.go)
+- **shift is optional** — shifted state mappings; falls back to US QWERTY shift if omitted
 
 The layout will automatically appear in the layout list the next time you launch Ditto.
 
@@ -144,17 +163,19 @@ Some features I'm thinking of implementing in the future, not in order.
 
 - [x] UK layouts
 - [x] ANSI and ISO standards
+- [x] Additional niche standards (JIS, ABNT, KS)
 - [ ] Windows support
 - [ ] Mac support
 - [ ] Custom layouts via TUI
 - [ ] Custom finger zones
-- [ ] Additional niche standards (JIS, ABNT, KS)
 
 ## Contributing
 
 I'm certainly not much of an experienced programmer, so any contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement". If you're liking Ditto, I'd appreciate a star! Thanks again! ⭐
+As I kept developing this program, I've learned that keyboards actually get pretty deep. For instance, check out this [list](https://en.wikipedia.org/wiki/List_of_QWERTY_keyboard_language_variants) of QWERTY keyboard language variants. If you'd like to add a specific layout variant to the layout list, I'd appreciate a pull request or opening up an issue about it.
+
+A simple workflow:
 
 1. Fork the project
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -163,6 +184,8 @@ If you have a suggestion that would make this better, please fork the repo and c
 5. Open a pull request
 
 When writing my commit messages, I follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) spec, so I'd be glad if you followed this convention as well for your contributions for the sake of consistency.
+
+If you're liking Ditto, I'd appreciate a star! Thanks again! ⭐
 
 ## Acknowledgments
 
@@ -174,13 +197,17 @@ Here is a list of useful resources that I always refer to when developing:
 - [evdev docs](https://pkg.go.dev/github.com/gvalkov/golang-evdev)
 - [input interfaces](https://www.kernel.org/doc/html/latest/input/input.html)
 - [setcap](https://man.archlinux.org/man/setcap.8.en)
-- [capabilities](https://man7.org/linux/man-pages/man7/capabilities.7.html)
+- [standards reference](https://en.wikipedia.org/wiki/Keyboard_layout#/media/File:Physical_keyboard_layouts_comparison_ANSI_ISO_KS_ABNT_JIS.png)
 
 ## Note on AI
 
-I'm only a beginner programmer and I've only recently picked up Go, so I'm well aware that the codebase is subpar. I still don't have an eye for what is considered idiomatic Go or not. I've used AI to assist me with making this project, especially in cases where I got really stuck, but rest assured I also tried my best in reviewing it.
+I'm not an experienced programmer and I've only recently picked up Go, so I'm well aware that the codebase is subpar. I still don't have an eye for what is considered idiomatic Go or not.
 
-I'm always eager to learn and improve, so I'd be happy to hear any feedback or suggestions. If you'd like to contribute, you can refer to the [Contributing](#contributing) section above.
+I've used AI to assist me with making this project, notably for pointing me towards reliable resources like documentation and for easily doing tedious, repetitive tasks (especially so for when I was adding the key matrices for each keyboard standard's size).
+
+In the cases where I couldn't figure out an implementation despite researching on my own, I did lean into AI for suggestions, and sometimes an initial prototype of an implementation. Rest assured that I did my best in reviewing these suggestions, and making appropriate changes along the way.
+
+Of course, I'm certain the code can still be improved a lot more, so I'd be happy to hear any feedback or suggestions. If you'd like to contribute, you can refer to the [Contributing](#contributing) section above.
 
 ## License
 
