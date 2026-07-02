@@ -36,6 +36,7 @@ Ditto is a system-wide ASCII keyboard visualizer that captures global key presse
 - [Usage](#usage)
   - [Lists](#lists)
   - [Custom Layouts](#custom-layouts)
+  - [Lock](#lock)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [Acknowledgments](#acknowledgments)
@@ -52,30 +53,18 @@ Practically, it could have a niche use as well, like sharing your screen with ot
 
 ## Installation
 
-For now, this program is only installed through Go. So make sure you have Go installed first:
+I recommend installing the program through Go:
 
 ```bash
-# Check if Go is installed
-go version
-
-# If not, install it from https://go.dev/dl/
-# or via your package manager, e.g.:
-
-# sudo pacman -S go            (Arch)
-# sudo apt install golang-go   (Debian/Ubuntu)
+go install github.com/arvingarciabtw/ditto/cmd/ditto@latest
 ```
 
-Once you have Go installed, you can install it directly, or clone if you'd like to mess around with it:
+Or you can install the program via the AUR:
 
 ```bash
-
-# Install directly
-go install github.com/arvingarciabtw/ditto/cmd/ditto@latest
-
-# Or clone and build
-git clone https://github.com/arvingarciabtw/ditto.git
-cd ditto
-go build -o ditto ./cmd/ditto/
+yay -S ditto
+# or
+paru -S ditto
 ```
 
 Before executing the program with `ditto`, refer to the [permissions](#permissions) section below. You can also specify flags when executing ditto, particularly for locking the keyboard. See the [usage](#usage) section for more details on that.
@@ -83,46 +72,98 @@ Before executing the program with `ditto`, refer to the [permissions](#permissio
 ## Permissions
 
 > [!IMPORTANT]
-> Ditto reads raw evdev events from /dev/input/event\*, which isn't readable by normal users by default. You can grant the binary read access with:
+> Ditto reads raw evdev events from `/dev/input/event\*`, which isn't readable by normal users by default. You can grant the binary read access with:
 >
 > `sudo setcap cap_dac_read_search=ep "$(which ditto)"`
+>
+> The program will inform you about this when executing without permissions.
 >
 > This adds a single Linux capability (`cap_dac_read_search`) to the binary, so it only bypasses the DAC read check on `/dev/input/event*`, nothing else. The binary still runs as your user, not as root. You'd need to re-run it if you rebuilt the binary. You can revoke anytime with:
 >
 > `sudo setcap -r "$(which ditto)"`
 >
-> To my knowledge, this is the safer way of granting permissions. You could technically add the user to the input group and it would work, but this is more unsafe since this would grant full control over all devices under `/dev/input`.
+> To my knowledge, this is the safer way of granting permissions. You could technically add the user to the input group and it would work, but that'd be more unsafe since that would grant full control over all devices under `/dev/input`.
 
 ## Usage
 
-There are four commands you need to be aware of: `l`, `s`, `d`, and `c`. Pressing `l` opens up the layout list, `s` opens up the size list, and `d` opens up the standard list. If your active standard is either JIS or KS, you can press `c` to toggle between the Latin alphabet and the standard's logograms.
+There are four main commands you need to be aware of: `l`, `s`, `d`, and `c`. Pressing `l` opens up the layout list, `s` opens up the size list, and `d` opens up the standard list. If your active standard is either JIS or KS, you can press `c` to toggle between the Latin alphabet and the standard's logograms.
 
 > [!NOTE]
 > For the JIS and KS standards to render the logograms properly, you need to have a compatible font installed in your system. I recommend Noto Sans CJK JP and Noto Sans CJK KR.
 
+If you'd like to only see the keyboard, you can hide the informational text with `h`.
+
 ### Lists
 
-| Size   | Form Factor                        |
-| ------ | ---------------------------------- |
-| `60%`  | Compact, no F-row or arrows        |
-| `65%`  | 60% + arrow keys + nav cluster     |
-| `75%`  | Has F-row, compact layout          |
-| `80%`  | TKL — F-row, arrows, no numpad     |
-| `96%`  | Compact full-size, includes numpad |
-| `100%` | Full-size with everything          |
+#### Size List
 
-| Layout       | Description                |
-| ------------ | -------------------------- |
-| `qwerty`     | Standard US layout         |
-| `qwerty uk`  | Standard UK layout         |
-| `dvorak`     | Dvorak simplified          |
-| `dvorak uk`  | Dvorak UK layout           |
-| `colemak`    | Colemak modern alternative |
-| `colemak-dh` | Colemak with angle mod     |
-| `workman`    | Workman layout             |
-| `azerty`     | French AZERTY              |
+<img width="1280" height="683" alt="size list demo" src="https://github.com/user-attachments/assets/0f6931fb-bcc6-49b7-80ff-d081a233886b" />
 
-If you wish, you can add your own key maps for your custom layouts!
+Press `s` to open the size list. This determines which physical key matrix the ASCII keyboard renders. Choose from compact 60% all the way up to full-size 100%.
+
+<table width="100%">
+  <thead>
+    <tr>
+      <th>Size</th>
+      <th>Form Factor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>60%</code></td><td>Compact, no F-row or arrows</td></tr>
+    <tr><td><code>65%</code></td><td>60% + arrow keys + nav cluster</td></tr>
+    <tr><td><code>75%</code></td><td>Has F-row, compact layout</td></tr>
+    <tr><td><code>80%</code></td><td>TKL — F-row, arrows, no numpad</td></tr>
+    <tr><td><code>96%</code></td><td>Compact full-size, includes numpad</td></tr>
+    <tr><td><code>100%</code></td><td>Full-size with everything</td></tr>
+  </tbody>
+</table>
+
+#### Layout List
+
+<img width="1280" height="683" alt="layout list demo" src="https://github.com/user-attachments/assets/1b48383d-e9f9-487d-bb19-d0b807461bda" />
+
+Press `l` to open the layout list. This determines how the keys are remapped. Choose from popular layouts like QWERTY, Dvorak, Colemak, and more.
+
+<table width="100%">
+  <thead>
+    <tr>
+      <th>Layout</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>qwerty</code></td><td>Standard US layout</td></tr>
+    <tr><td><code>qwerty uk</code></td><td>Standard UK layout</td></tr>
+    <tr><td><code>dvorak</code></td><td>Dvorak simplified</td></tr>
+    <tr><td><code>dvorak uk</code></td><td>Dvorak UK layout</td></tr>
+    <tr><td><code>colemak</code></td><td>Colemak modern alternative</td></tr>
+    <tr><td><code>colemak-dh</code></td><td>Colemak with angle mod</td></tr>
+    <tr><td><code>workman</code></td><td>Workman layout</td></tr>
+    <tr><td><code>azerty</code></td><td>French AZERTY</td></tr>
+  </tbody>
+</table>
+
+#### Standard List
+
+<img width="1280" height="683" alt="standard list demo" src="https://github.com/user-attachments/assets/bb3b48f3-7f5b-4459-9733-13957fa4f6ad" />
+
+Press `d` to open the standard list. This determines the physical keyboard standard. Choose from ANSI, ISO, ABNT, JIS, or KS.
+
+<table width="100%">
+  <thead>
+    <tr>
+      <th>Standard</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>ansi</code></td><td>American National Standards Institute</td></tr>
+    <tr><td><code>iso</code></td><td>International Organization for Standardization (ISO)</td></tr>
+    <tr><td><code>abnt</code></td><td>Associação Brasileira de Normas Técnicas</td></tr>
+    <tr><td><code>jis</code></td><td>Japanese Industrial Standard</td></tr>
+    <tr><td><code>ks</code></td><td>Korean Standard</td></tr>
+  </tbody>
+</table>
 
 ### Custom Layouts
 
@@ -155,11 +196,11 @@ Each `.json` file becomes a named layout (the filename without extension). Forma
 ```
 
 - **map is required** — maps physical key labels → remapped labels (same format as the built-in layouts in layouts.go)
-- **shift is optional** — shifted state mappings; falls back to US QWERTY shift if omitted
+- **shift is optional** — shifted state mappings; falls back to shift mappings for qwerty us layout if omitted
 
 The layout will automatically appear in the layout list the next time you launch Ditto.
 
-### Locking
+### Lock
 
 If you're happy with the current layout and want to keep that permanently every time you run the program, you can lock the keyboard with `ditto --lock`. Locking it means that your visual settings will not work. Bindings for opening up a list, toggling the TUI text with `h`, or toggling the logograms with `c` will intentionally not work.
 
@@ -184,14 +225,6 @@ Some features I'm thinking of implementing in the future, not in order.
 I'm certainly not much of an experienced programmer, so any contributions you make are **greatly appreciated**.
 
 As I kept developing this program, I've learned that keyboards actually get pretty deep. For instance, check out this [list](https://en.wikipedia.org/wiki/List_of_QWERTY_keyboard_language_variants) of QWERTY keyboard language variants. If you'd like to add a specific layout variant to the layout list, I'd appreciate a pull request or opening up an issue about it.
-
-A simple workflow:
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add super amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a pull request
 
 When writing my commit messages, I follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) spec, so I'd be glad if you followed this convention as well for your contributions for the sake of consistency.
 
