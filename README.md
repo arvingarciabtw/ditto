@@ -65,6 +65,27 @@ yay -S ditto
 paru -S ditto
 ```
 
+
+Or via the flake for nix users: 
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    ditto = {
+      url = "github:arvingarciabtw/ditto";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  # ...
+}
+```
+
+it's available under `ditto.packages.<system>.default` .
+
+
+
 Before executing the program with `ditto`, refer to the [permissions](#permissions) section below. You can also specify flags when executing ditto, particularly for locking the keyboard. See the [usage](#usage) section for more details on that.
 
 ## Permissions
