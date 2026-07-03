@@ -1,5 +1,5 @@
 {
-  description = "ditto";
+  description = "a system-wide ascii keyboard visualizer in the terminal ";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
