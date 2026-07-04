@@ -51,6 +51,8 @@ Practically, it could have a niche use as well, like sharing your screen with ot
 
 ## Installation
 
+### Linux
+
 I recommend installing the program through Go:
 
 ```bash
@@ -83,6 +85,17 @@ Or via the flake for nix users:
 ```
 
 It's available under `ditto.packages.<system>.default`.
+
+### Windows
+
+Download `ditto_windows_amd64.exe` from the [Releases](https://github.com/arvingarciabtw/ditto/releases) page, put it somewhere convenient (e.g. `C:\Users\<you>\bin` or `C:\Tools`), and add that folder to your `PATH`.
+
+### macOS
+
+Download `ditto_darwin_arm64` (Apple Silicon) or `ditto_darwin_amd64` (Intel) from the [Releases](https://github.com/arvingarciabtw/ditto/releases) page, rename it to `ditto` (or leave as-is), place it in a directory on your `PATH` (e.g. `/usr/local/bin`), and make it executable with `chmod +x /path/to/ditto`.
+
+> [!NOTE]
+> macOS support is **untested**. The keymapper is implemented and it compiles via CI, but it hasn't been verified on a physical Mac. If you try it, please report any issues!
 
 Before executing the program with `ditto`, refer to the [permissions](#permissions) section below. You can also specify flags when executing ditto, particularly for locking the keyboard. See the [usage](#usage) section for more details on that.
 
@@ -235,8 +248,8 @@ Some features I'm thinking of implementing in the future, not in order.
 - [x] UK layouts
 - [x] ANSI and ISO standards
 - [x] Additional niche standards (JIS, ABNT, KS)
-- [ ] Windows support
-- [ ] Mac support
+- [x] Windows support
+- [x] Mac support (best-effort, untested)
 - [ ] Custom layouts via TUI
 - [ ] Custom finger zones
 
