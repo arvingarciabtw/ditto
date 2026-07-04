@@ -3,8 +3,6 @@
 package tui
 
 import (
-	"fmt"
-
 	"github.com/arvingarciabtw/ditto/internal/config"
 	"github.com/arvingarciabtw/ditto/internal/keyboard"
 	"github.com/arvingarciabtw/ditto/internal/tui/components"
@@ -56,8 +54,8 @@ func InitModel(cfg config.Config) Model {
 		AccentColor:  SizeColor,
 		VisibleCount: 3,
 	}
-	for i, item := range sizeList.Items {
-		if item == fmt.Sprintf("%d%%", cfg.ActiveSize) {
+	for i, s := range keyboard.Sizes {
+		if s == cfg.ActiveSize {
 			sizeList.Selected = i
 			break
 		}

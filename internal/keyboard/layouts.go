@@ -1,6 +1,10 @@
 package keyboard
 
-import "github.com/arvingarciabtw/ditto/internal/keyboard/base"
+import (
+	"fmt"
+
+	"github.com/arvingarciabtw/ditto/internal/keyboard/base"
+)
 
 var layouts = map[string]map[string]string{
 	"qwerty": nil,
@@ -122,28 +126,25 @@ var BuiltinLayoutNames = []string{
 	"azerty",
 }
 
+var Sizes = []int{60, 65, 75, 80, 96, 100}
+
 var LayoutListItems []string
 
-var LayoutSizeItems = []string{
-	"60%",
-	"65%",
-	"75%",
-	"80%",
-	"96%",
-	"100%",
-}
+var LayoutSizeItems []string
 
 func init() {
-	seen := make(map[string]bool, len(BuiltinLayoutNames))
-	LayoutListItems = make([]string, 0, len(layouts))
+	loadCustomLayouts()
+
+	LayoutSizeItems = make([]string, len(Sizes))
+	for i, s := range Sizes {
+		LayoutSizeItems[i] = fmt.Sprintf("%d%%", s)
+	}
+
+	LayoutListItems = make([]string, 0, len(BuiltinLayoutNames)+len(customLayoutNames))
 	for _, name := range BuiltinLayoutNames {
 		LayoutListItems = append(LayoutListItems, name)
-		seen[name] = true
 	}
-	for name := range layouts {
-		if !seen[name] {
-			LayoutListItems = append(LayoutListItems, name)
-			seen[name] = true
-		}
+	for _, name := range customLayoutNames {
+		LayoutListItems = append(LayoutListItems, name)
 	}
 }

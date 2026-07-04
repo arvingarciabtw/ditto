@@ -20,4 +20,6 @@ type Key = base.Key
 
 type Data = standards.Data
 
+// StandardListItems is the ordered list of supported keyboard standards.
+// It re-exports standards.ListItems without allowing divergence.
 var StandardListItems = standards.ListItems
