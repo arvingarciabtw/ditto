@@ -28,7 +28,7 @@ func TestListModel_initialSelection(t *testing.T) {
 
 func TestListModel_navigateDown(t *testing.T) {
 	l := testList()
-	l, _ = l.Update(tea.KeyPressMsg{Text: "j", Code: 'j'})
+	l, _ = l.Update(tea.KeyPressMsg{Code: 'j'})
 	if l.Selected != 1 {
 		t.Errorf("expected Selected=1, got %d", l.Selected)
 	}
@@ -37,7 +37,7 @@ func TestListModel_navigateDown(t *testing.T) {
 func TestListModel_navigateUp(t *testing.T) {
 	l := testList()
 	l.Selected = 2
-	l, _ = l.Update(tea.KeyPressMsg{Text: "k", Code: 'k'})
+	l, _ = l.Update(tea.KeyPressMsg{Code: 'k'})
 	if l.Selected != 1 {
 		t.Errorf("expected Selected=1, got %d", l.Selected)
 	}
@@ -71,7 +71,7 @@ func TestListModel_confirmEnter(t *testing.T) {
 
 func TestListModel_cancelQ(t *testing.T) {
 	l := testList()
-	_, action := l.Update(tea.KeyPressMsg{Text: "q", Code: 'q'})
+	_, action := l.Update(tea.KeyPressMsg{Code: 'q'})
 	if action != ListCancel {
 		t.Errorf("expected ListCancel, got %d", action)
 	}

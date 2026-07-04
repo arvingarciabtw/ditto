@@ -1,12 +1,13 @@
 package keyboard
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
 	lipgloss "charm.land/lipgloss/v2"
-	evdev "github.com/gvalkov/golang-evdev"
 
+	"github.com/arvingarciabtw/ditto/internal/keyboard/base"
 	"github.com/arvingarciabtw/ditto/internal/keyboard/standards"
 )
 
@@ -159,20 +160,24 @@ func TestRender_size60_startsWithComma(t *testing.T) {
 func TestRender_allSizesRender(t *testing.T) {
 	fs, fa := emptyStyles()
 	for size := range standards.SizesANSI {
-		got := Render("qwerty", size, "ansi", nil, fs, fa)
-		if got == "" {
-			t.Errorf("size %d produced empty output", size)
-		}
+		t.Run(fmt.Sprintf("%d%%", size), func(t *testing.T) {
+			got := Render("qwerty", size, "ansi", nil, fs, fa)
+			if got == "" {
+				t.Errorf("size %d produced empty output", size)
+			}
+		})
 	}
 }
 
 func TestRender_allSizesStandard(t *testing.T) {
 	fs, fa := emptyStyles()
 	for size := range standards.SizesISO {
-		got := Render("qwerty", size, "iso", nil, fs, fa)
-		if got == "" {
-			t.Errorf("ISO size %d produced empty output", size)
-		}
+		t.Run(fmt.Sprintf("%d%%", size), func(t *testing.T) {
+			got := Render("qwerty", size, "iso", nil, fs, fa)
+			if got == "" {
+				t.Errorf("ISO size %d produced empty output", size)
+			}
+		})
 	}
 }
 
@@ -203,17 +208,19 @@ func TestRender_size80_hasGaps(t *testing.T) {
 func TestRender_Standard_allSizesDistinct(t *testing.T) {
 	fs, fa := emptyStyles()
 	for size := range standards.SizesANSI {
-		ansi := Render("qwerty", size, "ansi", nil, fs, fa)
-		std := Render("qwerty", size, "iso", nil, fs, fa)
-		if ansi == std {
-			t.Errorf("ISO size %d should differ from ANSI", size)
-		}
+		t.Run(fmt.Sprintf("%d%%", size), func(t *testing.T) {
+			ansi := Render("qwerty", size, "ansi", nil, fs, fa)
+			std := Render("qwerty", size, "iso", nil, fs, fa)
+			if ansi == std {
+				t.Errorf("ISO size %d should differ from ANSI", size)
+			}
+		})
 	}
 }
 
 func TestQWERTYUKShiftMap(t *testing.T) {
 	fs, fa := emptyStyles()
-	shifted := map[uint16]bool{evdev.KEY_LEFTSHIFT: true}
+	shifted := map[uint16]bool{base.KEY_LEFTSHIFT: true}
 	got := Render("qwerty uk", 60, "ansi", shifted, fs, fa)
 	if !strings.Contains(got, "\"") {
 		t.Error("UK layout should show \" when shift+2 is held")
@@ -228,7 +235,7 @@ func TestQWERTYUKShiftMap(t *testing.T) {
 
 func TestQWERTYUKAltGr(t *testing.T) {
 	fs, fa := emptyStyles()
-	altGr := map[uint16]bool{evdev.KEY_RIGHTALT: true}
+	altGr := map[uint16]bool{base.KEY_RIGHTALT: true}
 	got := Render("qwerty uk", 60, "ansi", altGr, fs, fa)
 	if !strings.Contains(got, "Á") {
 		t.Error("UK layout should show Á when AltGr+A is held")
@@ -240,7 +247,7 @@ func TestQWERTYUKAltGr(t *testing.T) {
 
 func TestQWERTYUKShiftAltGr(t *testing.T) {
 	fs, fa := emptyStyles()
-	both := map[uint16]bool{evdev.KEY_LEFTSHIFT: true, evdev.KEY_RIGHTALT: true}
+	both := map[uint16]bool{base.KEY_LEFTSHIFT: true, base.KEY_RIGHTALT: true}
 	got := Render("qwerty uk", 60, "ansi", both, fs, fa)
 	if !strings.Contains(got, "Á") {
 		t.Error("UK layout should show Á when Shift+AltGr+A is held")
@@ -252,7 +259,7 @@ func TestQWERTYUKShiftAltGr(t *testing.T) {
 
 func TestDvorakUKShiftMap(t *testing.T) {
 	fs, fa := emptyStyles()
-	shifted := map[uint16]bool{evdev.KEY_LEFTSHIFT: true}
+	shifted := map[uint16]bool{base.KEY_LEFTSHIFT: true}
 	got := Render("dvorak uk", 60, "ansi", shifted, fs, fa)
 	if !strings.Contains(got, "\"") {
 		t.Error("Dvorak UK layout should show \" when shift+2 is held")
@@ -264,7 +271,7 @@ func TestDvorakUKShiftMap(t *testing.T) {
 
 func TestDvorakUKAltGr(t *testing.T) {
 	fs, fa := emptyStyles()
-	altGr := map[uint16]bool{evdev.KEY_RIGHTALT: true}
+	altGr := map[uint16]bool{base.KEY_RIGHTALT: true}
 	got := Render("dvorak uk", 60, "ansi", altGr, fs, fa)
 	if !strings.Contains(got, "Á") {
 		t.Error("Dvorak UK layout should show Á when AltGr+A (QWERTY position) is held")
@@ -276,7 +283,7 @@ func TestDvorakUKAltGr(t *testing.T) {
 
 func TestQWERTYUK_BacktickShift(t *testing.T) {
 	fs, fa := emptyStyles()
-	shifted := map[uint16]bool{evdev.KEY_LEFTSHIFT: true}
+	shifted := map[uint16]bool{base.KEY_LEFTSHIFT: true}
 	got := Render("qwerty uk", 60, "ansi", shifted, fs, fa)
 	if !strings.Contains(got, "¬") {
 		t.Error("UK layout should show ¬ when shift is held (shift+` = ¬)")
@@ -286,26 +293,28 @@ func TestQWERTYUK_BacktickShift(t *testing.T) {
 func TestJIS_allSizesHaveJISKeys(t *testing.T) {
 	fs, fa := emptyStyles()
 	for size := range standards.SizesJIS {
-		got := Render("qwerty", size, "jis", nil, fs, fa)
-		if got == "" {
-			t.Errorf("JIS size %d produced empty output", size)
-		}
-		jisKey := "全半"
-		if size == 75 || size == 96 {
-			jisKey = "全"
-		}
-		jisSingles := []string{jisKey, "無", "変", "仮"}
-		for _, s := range jisSingles {
-			if !strings.Contains(got, s) {
-				t.Errorf("JIS size %d missing %q", size, s)
+		t.Run(fmt.Sprintf("%d%%", size), func(t *testing.T) {
+			got := Render("qwerty", size, "jis", nil, fs, fa)
+			if got == "" {
+				t.Errorf("JIS size %d produced empty output", size)
 			}
-		}
+			jisKey := "全半"
+			if size == 75 || size == 96 {
+				jisKey = "全"
+			}
+			jisSingles := []string{jisKey, "無", "変", "仮"}
+			for _, s := range jisSingles {
+				if !strings.Contains(got, s) {
+					t.Errorf("JIS size %d missing %q", size, s)
+				}
+			}
+		})
 	}
 }
 
 func TestQWERTYUK_BacktickAltGr(t *testing.T) {
 	fs, fa := emptyStyles()
-	altGr := map[uint16]bool{evdev.KEY_RIGHTALT: true}
+	altGr := map[uint16]bool{base.KEY_RIGHTALT: true}
 	got := Render("qwerty uk", 60, "ansi", altGr, fs, fa)
 	if !strings.Contains(got, "¦") {
 		t.Error("UK layout should show ¦ when AltGr is held (AltGr+` = ¦)")
@@ -314,7 +323,7 @@ func TestQWERTYUK_BacktickAltGr(t *testing.T) {
 
 func TestBacktickShift_NonUK(t *testing.T) {
 	fs, fa := emptyStyles()
-	shifted := map[uint16]bool{evdev.KEY_LEFTSHIFT: true}
+	shifted := map[uint16]bool{base.KEY_LEFTSHIFT: true}
 	got := Render("qwerty", 60, "ansi", shifted, fs, fa)
 	if !strings.Contains(got, "~") {
 		t.Error("US layout should show ~ when shift+` is held")

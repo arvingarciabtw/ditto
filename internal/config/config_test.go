@@ -1,9 +1,9 @@
 package config
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -29,8 +29,12 @@ func TestLoadConfig_missingFile(t *testing.T) {
 
 func TestLoadConfig_invalidJSON(t *testing.T) {
 	path := tempConfigDir(t)
-	os.MkdirAll(filepath.Dir(path), 0o755)
-	os.WriteFile(path, []byte("not json"), 0o600)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte("not json"), 0o600); err != nil {
+		t.Fatal(err)
+	}
 
 	cfg := LoadConfig()
 	if cfg.ActiveLayout != "qwerty" {
@@ -40,8 +44,12 @@ func TestLoadConfig_invalidJSON(t *testing.T) {
 
 func TestLoadConfig_valid(t *testing.T) {
 	path := tempConfigDir(t)
-	os.MkdirAll(filepath.Dir(path), 0o755)
-	os.WriteFile(path, []byte(`{"active_layout":"dvorak","active_size":65}`), 0o600)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte(`{"active_layout":"dvorak","active_size":65}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
 
 	cfg := LoadConfig()
 	if cfg.ActiveLayout != "dvorak" {
@@ -55,21 +63,21 @@ func TestLoadConfig_valid(t *testing.T) {
 func TestSaveConfig_writesFile(t *testing.T) {
 	path := tempConfigDir(t)
 
-	SaveConfig(Config{ActiveLayout: "colemak", ActiveSize: 80, ActiveStandard: "iso"})
+	want := Config{ActiveLayout: "colemak", ActiveSize: 80, ActiveStandard: "iso"}
+	if err := SaveConfig(want); err != nil {
+		t.Fatal(err)
+	}
 
 	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("expected config file to exist: %v", err)
 	}
-	got := string(data)
-	if !strings.Contains(got, `"active_layout": "colemak"`) {
-		t.Errorf("expected colemak in output, got %s", got)
+	var got Config
+	if err := json.Unmarshal(data, &got); err != nil {
+		t.Fatalf("invalid JSON in saved config: %v", err)
 	}
-	if !strings.Contains(got, `"active_size": 80`) {
-		t.Errorf("expected size 80 in output, got %s", got)
-	}
-	if !strings.Contains(got, `"active_standard": "iso"`) {
-		t.Errorf("expected active_standard iso in output, got %s", got)
+	if got != want {
+		t.Errorf("saved config differs: got %+v, want %+v", got, want)
 	}
 }
 
@@ -77,7 +85,9 @@ func TestSaveLoad_roundTrip(t *testing.T) {
 	tempConfigDir(t)
 
 	original := Config{ActiveLayout: "azerty", ActiveSize: 100, ActiveStandard: "iso"}
-	SaveConfig(original)
+	if err := SaveConfig(original); err != nil {
+		t.Fatal(err)
+	}
 
 	loaded := LoadConfig()
 	if loaded != original {

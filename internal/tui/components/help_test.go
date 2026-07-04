@@ -2,6 +2,8 @@ package components
 
 import (
 	"testing"
+
+	bkey "charm.land/bubbles/v2/key"
 )
 
 func hasKey(keys []string, target string) bool {
@@ -61,17 +63,69 @@ func TestCommands_HideKeyHelp(t *testing.T) {
 	}
 }
 
-func TestCommands_fourBindings(t *testing.T) {
-	if Commands.Layout.Keys() == nil {
-		t.Error("Layout binding should have keys")
+func TestCommands_StandardKeys(t *testing.T) {
+	keys := Commands.Standard.Keys()
+	if !hasKey(keys, "d") {
+		t.Errorf("expected d in Standard keys, got %v", keys)
 	}
-	if Commands.Size.Keys() == nil {
-		t.Error("Size binding should have keys")
+}
+
+func TestCommands_StandardHelp(t *testing.T) {
+	if Commands.Standard.Help().Key != "d" {
+		t.Errorf("expected d, got %q", Commands.Standard.Help().Key)
 	}
-	if Commands.Standard.Keys() == nil {
-		t.Error("Standard binding should have keys")
+	if Commands.Standard.Help().Desc != "std" {
+		t.Errorf("expected std, got %q", Commands.Standard.Help().Desc)
 	}
-	if Commands.HideKey.Keys() == nil {
-		t.Error("HideKey binding should have keys")
+}
+
+func TestCommands_KanaKeys(t *testing.T) {
+	keys := Commands.Kana.Keys()
+	if !hasKey(keys, "c") {
+		t.Errorf("expected c in Kana keys, got %v", keys)
+	}
+}
+
+func TestCommands_KanaHelp(t *testing.T) {
+	if Commands.Kana.Help().Key != "c" {
+		t.Errorf("expected c, got %q", Commands.Kana.Help().Key)
+	}
+	if Commands.Kana.Help().Desc != "chars" {
+		t.Errorf("expected chars, got %q", Commands.Kana.Help().Desc)
+	}
+}
+
+func TestCommands_HangeulKeys(t *testing.T) {
+	keys := Commands.Hangeul.Keys()
+	if !hasKey(keys, "c") {
+		t.Errorf("expected c in Hangeul keys, got %v", keys)
+	}
+}
+
+func TestCommands_HangeulHelp(t *testing.T) {
+	if Commands.Hangeul.Help().Key != "c" {
+		t.Errorf("expected c, got %q", Commands.Hangeul.Help().Key)
+	}
+	if Commands.Hangeul.Help().Desc != "chars" {
+		t.Errorf("expected chars, got %q", Commands.Hangeul.Help().Desc)
+	}
+}
+
+func TestCommands_allBindingsHaveKeys(t *testing.T) {
+	bindings := []struct {
+		name string
+		b    bkey.Binding
+	}{
+		{"Layout", Commands.Layout},
+		{"Size", Commands.Size},
+		{"Standard", Commands.Standard},
+		{"HideKey", Commands.HideKey},
+		{"Kana", Commands.Kana},
+		{"Hangeul", Commands.Hangeul},
+	}
+	for _, b := range bindings {
+		if b.b.Keys() == nil {
+			t.Errorf("%s binding should have keys", b.name)
+		}
 	}
 }
