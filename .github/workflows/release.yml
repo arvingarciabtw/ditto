@@ -39,9 +39,11 @@ jobs:
         run: choco install mingw -y --no-progress
 
       - name: Build
-        run: |
-          CGO_ENABLED=1 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
-            go build -o ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }} ./cmd/ditto/
+        env:
+          CGO_ENABLED: 1
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: go build -o ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }} ./cmd/ditto/
 
       - uses: actions/upload-artifact@v4
         with:
