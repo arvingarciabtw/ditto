@@ -261,14 +261,12 @@ If you prefer, you can also just edit `config.json` in [ditto's config directory
 
 Some features I'm thinking of implementing in the future, not in order.
 
-- [x] UK layouts
-- [x] ANSI and ISO standards
-- [x] Additional niche standards (JIS, ABNT, KS)
-- [x] Windows support
-- [x] Mac support (best-effort, untested)
+- [x] Physical layouts (standards)
+- [x] Cross-platform support
+- [ ] Keycast mode
 - [ ] Smoother variant with box drawing characters
+- [ ] Layers
 - [ ] Custom layouts via TUI
-- [ ] Custom finger zones
 
 ## Contributing
 
