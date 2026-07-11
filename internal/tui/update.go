@@ -93,7 +93,7 @@ func (m Model) handleLayoutListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) 
 
 	case components.ListConfirm:
 		m.activeLayout = strings.ToLower(m.layoutList.Items[m.layoutList.Selected])
-		if strings.HasSuffix(m.activeLayout, " uk") {
+		if strings.HasSuffix(m.activeLayout, " uk") || m.activeLayout == "qwertz" {
 			m.activeStandard = "iso"
 		}
 		m.showLayoutList = false

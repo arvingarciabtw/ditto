@@ -83,6 +83,20 @@ var layouts = map[string]map[string]string{
 
 	"qwerty uk": nil,
 
+	"qwertz": {
+		"`":  "^",
+		"-":  "ß",
+		"=":  "´",
+		"Y":  "Z",
+		"Z":  "Y",
+		"[":  "Ü",
+		"]":  "+",
+		"\\": "<",
+		";":  "Ö",
+		"'":  "Ä",
+		"/":  "-",
+	},
+
 	"azerty": {
 		"`": "²",
 
@@ -108,16 +122,19 @@ var shiftMaps = map[string]map[string]string{
 	"qwerty uk": base.UKShift,
 	"dvorak uk": base.UKShift,
 	"azerty":    base.AZERTYShift,
+	"qwertz":    base.GermanShift,
 }
 
 var altGrMaps = map[string]map[string]string{
 	"qwerty uk": base.UKAltGr,
 	"dvorak uk": base.UKAltGr,
+	"qwertz":    base.GermanAltGr,
 }
 
 var BuiltinLayoutNames = []string{
 	"qwerty",
 	"qwerty uk",
+	"qwertz",
 	"dvorak",
 	"dvorak uk",
 	"colemak",
@@ -141,10 +158,6 @@ func init() {
 	}
 
 	LayoutListItems = make([]string, 0, len(BuiltinLayoutNames)+len(customLayoutNames))
-	for _, name := range BuiltinLayoutNames {
-		LayoutListItems = append(LayoutListItems, name)
-	}
-	for _, name := range customLayoutNames {
-		LayoutListItems = append(LayoutListItems, name)
-	}
+	LayoutListItems = append(LayoutListItems, BuiltinLayoutNames...)
+	LayoutListItems = append(LayoutListItems, customLayoutNames...)
 }
