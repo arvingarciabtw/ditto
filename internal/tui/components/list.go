@@ -71,14 +71,15 @@ func (l ListModel) View(statusBarStyle lipgloss.Style) string {
 		}
 	}
 
-	for i, line := range itemLines {
+	for _, line := range itemLines {
 		b.WriteString(line)
-		if i < len(itemLines)-1 {
-			b.WriteString("\n")
-		}
+		b.WriteString("\n")
+	}
+	for i := len(itemLines); i < l.VisibleCount; i++ {
+		b.WriteString("\n")
 	}
 
-	b.WriteString("\n\n")
+	b.WriteString("\n")
 
 	help := statusBarStyle.Render("↵ / enter • q / quit")
 	helpWidth := lipgloss.Width(help)
@@ -100,5 +101,9 @@ func (l ListModel) windowStart() int {
 
 func (l ListModel) visibleItems() []string {
 	start := l.windowStart()
-	return l.Items[start : start+l.VisibleCount]
+	end := start + l.VisibleCount
+	if end > len(l.Items) {
+		end = len(l.Items)
+	}
+	return l.Items[start:end]
 }

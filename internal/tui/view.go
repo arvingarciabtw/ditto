@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	lipgloss "charm.land/lipgloss/v2"
@@ -15,9 +16,14 @@ import (
 func (m Model) View() tea.View {
 	const overlayWidth = 30
 
-	s := base(m)
+	var s string
+	if m.keycastMode {
+		s = keycastView(m)
+	} else {
+		s = base(m)
+	}
 
-	hasOverlay := m.showLayoutList || m.showSizeList || m.showStandardList || m.showQuitDialog
+	hasOverlay := m.showLayoutList || m.showSizeList || m.showStandardList || m.showQuitDialog || m.showModeList
 
 	if hasOverlay {
 		tw, th := m.terminalWidth, m.terminalHeight
@@ -40,6 +46,10 @@ func (m Model) View() tea.View {
 		case m.showQuitDialog:
 			h = 8
 			ov = OverlayBase.BorderForeground(QuitBorderColor).Width(overlayWidth).Height(h).Render(m.quitDialog.View())
+		case m.showModeList:
+			h = 8
+			m.modeList.VisibleCount = 2
+			ov = OverlayBase.BorderForeground(ModeColor).Width(overlayWidth).Height(h).Render(m.modeList.View(StatusBarStyle))
 		}
 
 		x := (tw - overlayWidth) / 2
@@ -154,6 +164,7 @@ func renderBindings(c components.Bindings, activeStandard string) string {
 		StatusBarStyle.Render(c.Layout.Help().Key) + " " + StatusBarStyle.Render(c.Layout.Help().Desc),
 		StatusBarStyle.Render(c.Size.Help().Key) + " " + StatusBarStyle.Render(c.Size.Help().Desc),
 		StatusBarStyle.Render(c.Standard.Help().Key) + " " + StatusBarStyle.Render(standardDesc),
+		StatusBarStyle.Render(c.Keycast.Help().Key) + " " + StatusBarStyle.Render(c.Keycast.Help().Desc),
 	}
 	switch activeStandard {
 	case "jis":
@@ -164,6 +175,76 @@ func renderBindings(c components.Bindings, activeStandard string) string {
 		parts = append(parts, StatusBarStyle.Render(c.HideKey.Help().Key)+" "+StatusBarStyle.Render(c.HideKey.Help().Desc))
 	}
 	return strings.Join(parts, StatusBarStyle.Render(" • "))
+}
+
+func keycastView(m Model) string {
+	tw, th := m.terminalWidth, m.terminalHeight
+	if tw == 0 || th == 0 {
+		return ""
+	}
+
+	now := time.Now()
+	var keyLabels []string
+	for _, e := range m.keycastKeys {
+		if now.Sub(e.pressedAt) < 1500*time.Millisecond {
+			keyLabels = append(keyLabels, e.label)
+		}
+	}
+	labels := fitLabelsToWidth(keyLabels, tw)
+	row := keycastBoxRow(labels)
+
+	showBar := m.showAllInfo
+	if !showBar {
+		if row == "" {
+			return lipgloss.Place(tw, th, lipgloss.Center, lipgloss.Center, "")
+		}
+		return lipgloss.Place(tw, th, lipgloss.Center, lipgloss.Center, row)
+	}
+
+	cmd := StatusBarStyle.Render("h hide • m mode • q quit")
+	cmdLine := lipgloss.Place(tw, 1, lipgloss.Center, lipgloss.Center, cmd)
+
+	availH := th - 2
+	if row == "" {
+		return lipgloss.Place(tw, availH, lipgloss.Center, lipgloss.Center, "") + "\n" + cmdLine
+	}
+
+	keyArea := lipgloss.Place(tw, availH, lipgloss.Center, lipgloss.Center, row)
+	return keyArea + "\n" + cmdLine
+}
+
+func fitLabelsToWidth(labels []string, maxWidth int) []string {
+	if len(labels) == 0 {
+		return nil
+	}
+	for len(labels) > 1 {
+		tops := make([]string, len(labels))
+		for i, l := range labels {
+			w := lipgloss.Width(l)
+			tops[i] = "," + strings.Repeat("-", w+2) + ","
+		}
+		if lipgloss.Width(strings.Join(tops, " ")) <= maxWidth {
+			break
+		}
+		labels = labels[1:]
+	}
+	return labels
+}
+
+func keycastBoxRow(labels []string) string {
+	if len(labels) == 0 {
+		return ""
+	}
+	tops := make([]string, len(labels))
+	mids := make([]string, len(labels))
+	bots := make([]string, len(labels))
+	for i, l := range labels {
+		w := lipgloss.Width(l)
+		tops[i] = "," + strings.Repeat("-", w+2) + ","
+		mids[i] = "| " + l + " |"
+		bots[i] = "'" + strings.Repeat("-", w+2) + "'"
+	}
+	return strings.Join(tops, " ") + "\n" + strings.Join(mids, " ") + "\n" + strings.Join(bots, " ")
 }
 
 func overlay(bg string, ov string, x, y int) string {

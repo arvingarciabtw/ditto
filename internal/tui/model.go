@@ -3,10 +3,18 @@
 package tui
 
 import (
+	"time"
+
 	"github.com/arvingarciabtw/ditto/internal/config"
 	"github.com/arvingarciabtw/ditto/internal/keyboard"
 	"github.com/arvingarciabtw/ditto/internal/tui/components"
 )
+
+type keycastEntry struct {
+	label     string
+	version   int
+	pressedAt time.Time
+}
 
 type Model struct {
 	activeLayout     string
@@ -17,10 +25,12 @@ type Model struct {
 	sizeList         components.ListModel
 	standardList     components.ListModel
 	quitDialog       components.DialogModel
+	modeList         components.ListModel
 	showLayoutList   bool
 	showSizeList     bool
 	showStandardList bool
 	showQuitDialog   bool
+	showModeList     bool
 	showAllInfo      bool
 	pressedKeys      map[uint16]bool
 	capsLock         bool
@@ -30,6 +40,9 @@ type Model struct {
 	hangeulActive    bool
 	terminalWidth    int
 	terminalHeight   int
+	keycastMode    bool
+	keycastKeys    []keycastEntry
+	keycastFadeVer int
 }
 
 func InitModel(cfg config.Config) Model {
@@ -81,10 +94,22 @@ func InitModel(cfg config.Config) Model {
 	}
 
 	return Model{
-		layoutList:       layoutList,
-		sizeList:         sizeList,
-		standardList:     standardList,
-		quitDialog:       components.DialogModel{AccentColor: QuitColor},
+		layoutList: layoutList,
+		sizeList:   sizeList,
+		standardList: standardList,
+		quitDialog: components.DialogModel{
+			AccentColor: QuitColor,
+			Prompt:      "Are you sure you want to quit?",
+			LeftLabel:   "Quit",
+			RightLabel:  "Cancel",
+		},
+		modeList: components.ListModel{
+			Items:        []string{"Default", "Keycast"},
+			Selected:     0,
+			Title:        "Mode",
+			AccentColor:  ModeColor,
+			VisibleCount: 2,
+		},
 		activeLayout:     cfg.ActiveLayout,
 		activeSize:       cfg.ActiveSize,
 		activeStandard:   cfg.ActiveStandard,
@@ -93,7 +118,7 @@ func InitModel(cfg config.Config) Model {
 		showSizeList:     false,
 		showStandardList: false,
 		showAllInfo:      showAllInfo,
-		pressedKeys:      make(map[uint16]bool),
+		pressedKeys: make(map[uint16]bool),
 	}
 }
 

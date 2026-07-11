@@ -15,6 +15,7 @@ var (
 	StandardColor   color.Color
 	QuitColor       color.Color
 	QuitBorderColor color.Color
+	ModeColor color.Color
 	OverlayBase     lipgloss.Style
 	StatusBarStyle  lipgloss.Style
 	FingerStyle     map[keyboard.Finger]lipgloss.Style
@@ -71,12 +72,14 @@ func init() {
 		StandardColor = lipgloss.BrightYellow
 		QuitColor = lipgloss.BrightRed
 		QuitBorderColor = lipgloss.BrightBlack
+		ModeColor = lipgloss.BrightCyan
 	} else {
 		LayoutColor = lipgloss.Blue
 		SizeColor = lipgloss.Magenta
 		StandardColor = lipgloss.Yellow
 		QuitColor = lipgloss.Red
 		QuitBorderColor = lipgloss.Black
+		ModeColor = lipgloss.Cyan
 	}
 
 	FingerStyle = make(map[keyboard.Finger]lipgloss.Style, len(colors))

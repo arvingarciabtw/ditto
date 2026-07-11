@@ -11,6 +11,7 @@ type Bindings struct {
 	HideKey  bkey.Binding
 	Kana     bkey.Binding
 	Hangeul  bkey.Binding
+	Keycast  bkey.Binding
 }
 
 var Commands = Bindings{
@@ -37,5 +38,9 @@ var Commands = Bindings{
 	Hangeul: bkey.NewBinding(
 		bkey.WithKeys("c"),
 		bkey.WithHelp("c", "chars"),
+	),
+	Keycast: bkey.NewBinding(
+		bkey.WithKeys("m"),
+		bkey.WithHelp("m", "mode"),
 	),
 }

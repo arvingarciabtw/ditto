@@ -7,6 +7,7 @@ package keyboard
 
 import (
 	"strings"
+	"unicode/utf8"
 
 	lipgloss "charm.land/lipgloss/v2"
 	ansi "github.com/charmbracelet/x/ansi"
@@ -72,6 +73,55 @@ func applyLayout(keys []Key, layoutMap map[string]string) []Key {
 func resolveStandard(standard string) (Data, bool) {
 	sd, ok := standards.All[standard]
 	return sd, ok
+}
+
+func ResolveKeycastLabel(scancode uint16, layout, standard string, pressedKeys map[uint16]bool) (string, bool) {
+	label, ok := base.EvCodeLabel[scancode]
+	if !ok {
+		return "", false
+	}
+
+	if layoutMap, ok := layouts[layout]; ok && layoutMap != nil {
+		if newLabel, ok := layoutMap[label]; ok {
+			label = newLabel
+		}
+	}
+
+	shiftHeld := pressedKeys[base.KEY_LEFTSHIFT] || pressedKeys[base.KEY_RIGHTSHIFT]
+	altGrHeld := pressedKeys[base.KEY_RIGHTALT]
+
+	if !shiftHeld && !altGrHeld {
+		return label, true
+	}
+
+	sd, ok := resolveStandard(standard)
+	if !ok {
+		return label, true
+	}
+
+	shiftMap := sd.ShiftMap
+	if lm, ok := shiftMaps[layout]; ok {
+		shiftMap = lm
+	}
+	altGrMap := sd.AltGrMap
+	if am, ok := altGrMaps[layout]; ok {
+		altGrMap = am
+	}
+
+	if altGrHeld && altGrMap != nil {
+		if newLabel, ok := altGrMap[label]; ok {
+			label = newLabel
+		}
+		if shiftHeld && utf8.RuneCountInString(label) == 1 {
+			label = strings.ToUpper(label)
+		}
+	} else if shiftHeld && shiftMap != nil {
+		if newLabel, ok := shiftMap[label]; ok {
+			label = newLabel
+		}
+	}
+
+	return label, true
 }
 
 func resolvePressed(rows, remapped [][]Key, pressedKeys map[uint16]bool) [][]bool {
