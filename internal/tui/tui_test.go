@@ -2,6 +2,7 @@ package tui
 
 import (
 	"testing"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 
@@ -203,5 +204,137 @@ func TestModel_locked_blocksH(t *testing.T) {
 	m = updateModel(t, m, tea.KeyPressMsg{Code: 'h'})
 	if !m.showAllInfo {
 		t.Error("expected showAllInfo to stay true when locked")
+	}
+}
+
+func TestModel_toggleKeycastMode(t *testing.T) {
+	m := testModel(t)
+	m = updateModel(t, m, tea.KeyPressMsg{Code: 'm'})
+	if !m.showModeList {
+		t.Error("expected showModeList to be true after m")
+	}
+	if m.keycastMode {
+		t.Error("expected keycastMode to still be false")
+	}
+	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyDown})
+	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyEnter})
+	if !m.keycastMode {
+		t.Error("expected keycastMode to be true after selecting Keycast")
+	}
+	if m.showModeList {
+		t.Error("expected showModeList to be false after confirm")
+	}
+	m = updateModel(t, m, tea.KeyPressMsg{Code: 'm'})
+	if !m.showModeList {
+		t.Error("expected showModeList to be true after second m")
+	}
+	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyUp})
+	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyEnter})
+	if m.keycastMode {
+		t.Error("expected keycastMode to be false after selecting Default")
+	}
+	if m.showModeList {
+		t.Error("expected showModeList to be false after confirm")
+	}
+}
+
+func TestModel_keycastKeyDown(t *testing.T) {
+	m := testModel(t)
+	m.keycastMode = true
+	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	if len(m.keycastKeys) != 1 || m.keycastKeys[0].label != "A" {
+		t.Errorf("expected keycastKeys [A], got %v", m.keycastKeys)
+	}
+}
+
+func TestModel_keycastKeyDownUp(t *testing.T) {
+	m := testModel(t)
+	m.keycastMode = true
+	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: false})
+	if len(m.keycastKeys) != 1 {
+		t.Errorf("expected keycastKeys to have 1 key after key-up, got %v", m.keycastKeys)
+	}
+}
+
+func TestModel_keycastFade(t *testing.T) {
+	m := testModel(t)
+	m.keycastMode = true
+	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	m.keycastKeys[0].pressedAt = time.Now().Add(-2 * time.Second)
+	m = updateModel(t, m, keycastFadeMsg{version: 99})
+	if len(m.keycastKeys) != 0 {
+		t.Errorf("expected keycastKeys empty after fade, got %v", m.keycastKeys)
+	}
+}
+
+func TestModel_keycastDuplicatePresses(t *testing.T) {
+	m := testModel(t)
+	m.keycastMode = true
+	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	v1 := m.keycastKeys[0].version
+	m.keycastKeys[0].pressedAt = time.Now().Add(-2 * time.Second)
+	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	v2 := m.keycastKeys[1].version
+	if len(m.keycastKeys) != 2 {
+		t.Fatalf("expected 2 entries after two presses, got %v", m.keycastKeys)
+	}
+	if v1 == v2 {
+		t.Error("expected different versions for each press")
+	}
+	m = updateModel(t, m, keycastFadeMsg{version: 99})
+	if len(m.keycastKeys) != 1 || m.keycastKeys[0].version != v2 {
+		t.Errorf("expected 1 entry with version %d after first fade, got %v", v2, m.keycastKeys)
+	}
+	m.keycastKeys[0].pressedAt = time.Now().Add(-2 * time.Second)
+	m = updateModel(t, m, keycastFadeMsg{version: 99})
+	if len(m.keycastKeys) != 0 {
+		t.Errorf("expected empty after second fade, got %v", m.keycastKeys)
+	}
+}
+
+func TestModel_keycastMaxFive(t *testing.T) {
+	m := testModel(t)
+	m.keycastMode = true
+	for i := 0; i < 6; i++ {
+		m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_1 + uint16(i), Down: true})
+	}
+	if len(m.keycastKeys) != 5 {
+		t.Errorf("expected 5 keys, got %d: %v", len(m.keycastKeys), m.keycastKeys)
+	}
+}
+
+func TestModel_keycastToggleNotBlockedByLocked(t *testing.T) {
+	m := testModel(t)
+	m.locked = true
+	m = updateModel(t, m, tea.KeyPressMsg{Code: 'm'})
+	if !m.showModeList {
+		t.Error("expected showModeList to be true even when locked")
+	}
+	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyDown})
+	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyEnter})
+	if !m.keycastMode {
+		t.Error("expected keycastMode to be true even when locked")
+	}
+}
+
+func TestModel_keycastQuitDialog(t *testing.T) {
+	m := testModel(t)
+	m.keycastMode = true
+	m = updateModel(t, m, tea.KeyPressMsg{Text: "q", Code: 'q'})
+	if !m.showQuitDialog {
+		t.Error("expected quit dialog to open in keycast mode after q")
+	}
+}
+
+func TestModel_keycastToggleClosesOverlays(t *testing.T) {
+	m := testModel(t)
+	m.showQuitDialog = true
+	m = updateModel(t, m, tea.KeyPressMsg{Code: 'm'})
+	if m.showQuitDialog {
+		t.Error("expected quit dialog to close when opening mode list")
+	}
+	if !m.showModeList {
+		t.Error("expected showModeList to be true when pressing m")
 	}
 }
