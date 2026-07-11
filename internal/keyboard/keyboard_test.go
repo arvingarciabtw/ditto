@@ -329,3 +329,73 @@ func TestBacktickShift_NonUK(t *testing.T) {
 		t.Error("US layout should show ~ when shift+` is held")
 	}
 }
+
+func TestQWERTZ_YandZSwap(t *testing.T) {
+	layoutMap := layouts["qwertz"]
+	keys := []Key{
+		{Label: "Y", Width: 3},
+		{Label: "Z", Width: 3},
+	}
+	result := applyLayout(keys, layoutMap)
+	if result[0].Label != "Z" {
+		t.Errorf("expected Y→Z, got %q", result[0].Label)
+	}
+	if result[1].Label != "Y" {
+		t.Errorf("expected Z→Y, got %q", result[1].Label)
+	}
+}
+
+func TestQWERTZ_GermanCharacters(t *testing.T) {
+	fs, fa := emptyStyles()
+	got := Render("qwertz", 60, "ansi", nil, fs, fa)
+	for _, want := range []string{"Ü", "Ö", "Ä", "ß"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("QWERTZ layout should show %q in the keyboard", want)
+		}
+	}
+}
+
+func TestQWERTZ_ShiftMap(t *testing.T) {
+	fs, fa := emptyStyles()
+	shifted := map[uint16]bool{base.KEY_LEFTSHIFT: true}
+	got := Render("qwertz", 60, "ansi", shifted, fs, fa)
+	if !strings.Contains(got, "\"") {
+		t.Error("QWERTZ should show \" when shift+2 is held")
+	}
+	if !strings.Contains(got, "§") {
+		t.Error("QWERTZ should show § when shift+3 is held")
+	}
+	if !strings.Contains(got, "°") {
+		t.Error("QWERTZ should show ° when shift+` is held")
+	}
+}
+
+func TestQWERTZ_AltGr(t *testing.T) {
+	fs, fa := emptyStyles()
+	altGr := map[uint16]bool{base.KEY_RIGHTALT: true}
+	got := Render("qwertz", 60, "ansi", altGr, fs, fa)
+	if !strings.Contains(got, "€") {
+		t.Error("QWERTZ should show € when AltGr+E is held")
+	}
+	if !strings.Contains(got, "@") {
+		t.Error("QWERTZ should show @ when AltGr+Q is held")
+	}
+	if !strings.Contains(got, "{") {
+		t.Error("QWERTZ should show { when AltGr+7 is held")
+	}
+}
+
+func TestQWERTZ_ShiftAltGr(t *testing.T) {
+	fs, fa := emptyStyles()
+	both := map[uint16]bool{base.KEY_LEFTSHIFT: true, base.KEY_RIGHTALT: true}
+	got := Render("qwertz", 60, "ansi", both, fs, fa)
+	if !strings.Contains(got, "€") {
+		t.Error("QWERTZ should show € when Shift+AltGr+E is held")
+	}
+	if !strings.Contains(got, "@") {
+		t.Error("QWERTZ should show @ when Shift+AltGr+Q is held")
+	}
+	if !strings.Contains(got, "{") {
+		t.Error("QWERTZ should show { when Shift+AltGr+7 is held")
+	}
+}
