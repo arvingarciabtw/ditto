@@ -8,7 +8,7 @@
 [![AUR](https://img.shields.io/aur/version/ditto?logo=archlinux)](https://aur.archlinux.org/packages/ditto)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/arvingarciabtw/ditto/blob/main/LICENSE)
 
-<img width="1280" height="683" alt="ditto v1.0.3 demo" src="https://github.com/user-attachments/assets/f6cda363-045b-4313-9ae2-10dfda03ced8" />
+<img width="1280" height="683" alt="ditto v1.1.0 demo" src="https://github.com/user-attachments/assets/08a694e0-b3af-4c65-924d-df8ecee237b5" />
 
 Ditto is a system-wide ASCII keyboard visualizer that mirrors your live keyboard inputs in real time, even when the terminal isn't in focus. It automatically syncs with your native terminal color scheme for seamless, interactive eye candy. If you love it, drop a ⭐ on the repo!
 
@@ -32,7 +32,12 @@ Ditto is a system-wide ASCII keyboard visualizer that mirrors your live keyboard
 - [Permissions](#permissions)
 - [Config](#config)
 - [Usage](#usage)
+  - [Modes](#modes)
+    - [Keycast](#keycast)
   - [Lists](#lists)
+    - [Size List](#size-list)
+    - [Layout List](#layout-list)
+    - [Standard List](#standard-list)
   - [Custom Layouts](#custom-layouts)
   - [Lock](#lock)
 - [Roadmap](#roadmap)
@@ -135,12 +140,22 @@ Ditto stores its config file and custom layouts in a per-OS config directory:
 > [!NOTE]
 > macOS users: substitute `dittokb` for `ditto` in all commands below.
 
-There are four main commands you need to be aware of: `l`, `s`, `d`, and `c`. Pressing `l` opens up the layout list, `s` opens up the size list, and `d` opens up the standard list. If your active standard is either JIS or KS, you can press `c` to toggle between the Latin alphabet and the standard's logograms.
+There are five main commands you need to be aware of: `m`, `l`, `s`, `d`, and `c`. Pressing `m` lets you choose between default and keycast mode. Pressing `l` opens up the layout list, `s` opens up the size list, and `d` opens up the standard list. If your active standard is either JIS or KS, you can press `c` to toggle between the Latin alphabet and the standard's logograms.
 
 > [!NOTE]
 > For the JIS and KS standards to render the logograms properly, you need to have a compatible font installed in your system. I recommend Noto Sans CJK JP and Noto Sans CJK KR.
 
 If you'd like to only see the keyboard, you can hide the informational text with `h`.
+
+### Modes
+
+There are two modes: default and keycast. Default mode is a visualizer for your keyboard with your selected layout, size, and standard. Keycast mode is ideal for practical usage, where you want to much more clearly display each pressed key, similar to existing keycasting software.
+
+#### Keycast
+
+<img width="1280" height="683" alt="keycast demo" src="https://github.com/user-attachments/assets/ccec563e-7ed9-47d7-af64-e4c1850d1aae" />
+
+Ideal usage of this mode is by setting your terminal to float, and bumping up the font size to make the keys more visible. The bottom bar while in keycast mode provides the available commands: `h` for toggling the hidden state of the bar, `f` to add key colors based on finger mappings, `m` to choose between modes, and `q` to quit the program.
 
 ### Lists
 
@@ -183,6 +198,7 @@ Press `l` to open the layout list. This determines how the keys are remapped. Ch
   <tbody>
     <tr><td><code>qwerty</code></td><td>Standard US layout</td></tr>
     <tr><td><code>qwerty uk</code></td><td>Standard UK layout</td></tr>
+    <tr><td><code>qwertz</code></td><td>German QWERTZ layout</td></tr>
     <tr><td><code>dvorak</code></td><td>Dvorak simplified</td></tr>
     <tr><td><code>dvorak uk</code></td><td>Dvorak UK layout</td></tr>
     <tr><td><code>colemak</code></td><td>Colemak modern alternative</td></tr>
