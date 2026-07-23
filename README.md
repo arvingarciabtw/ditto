@@ -1,12 +1,12 @@
 <img src="https://github.com/user-attachments/assets/97abc570-10c9-4f0a-bf7f-2e80b4a84d17" height="60" alt="ditto logo"/>
 
-[![CI](https://img.shields.io/github/actions/workflow/status/arvingarciabtw/ditto/ci.yml?logo=github&label=)](https://github.com/arvingarciabtw/ditto/actions)
-[![Go](https://img.shields.io/github/languages/top/arvingarciabtw/ditto?logo=go&label=)](https://go.dev)
-[![Commits](https://img.shields.io/github/commit-activity/m/arvingarciabtw/ditto)](https://github.com/arvingarciabtw/ditto/commits)
-[![Downloads](https://img.shields.io/github/downloads/arvingarciabtw/ditto/total?logo=github)](https://github.com/arvingarciabtw/ditto/releases)
-[![Release](https://img.shields.io/github/v/release/arvingarciabtw/ditto?logo=github)](https://github.com/arvingarciabtw/ditto/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/arvingarciabtw/ditto/ci.yml?label=status)](https://github.com/arvingarciabtw/ditto/actions)
+[![Go](https://img.shields.io/badge/go-1.26.2-blue?logo=go)](https://go.dev)
 [![AUR](https://img.shields.io/aur/version/ditto?logo=archlinux)](https://aur.archlinux.org/packages/ditto)
+[![Release](https://img.shields.io/github/v/release/arvingarciabtw/ditto?logo=github)](https://github.com/arvingarciabtw/ditto/releases)
+[![Downloads](https://img.shields.io/github/downloads/arvingarciabtw/ditto/total?logo=github)](https://github.com/arvingarciabtw/ditto/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/arvingarciabtw/ditto/blob/main/LICENSE)
+[![Charm in the Wild](https://img.shields.io/badge/featured-charm_in_the_wild-pink)](https://github.com/charm-and-friends/charm-in-the-wild#development-tools)
 
 <img width="1280" height="683" alt="ditto v1.1.0 demo" src="https://github.com/user-attachments/assets/08a694e0-b3af-4c65-924d-df8ecee237b5" />
 
@@ -279,7 +279,7 @@ Some features I'm thinking of implementing in the future, not in order.
 
 - [x] Physical layouts (standards)
 - [x] Cross-platform support
-- [ ] Keycast mode
+- [x] Keycast mode
 - [ ] Smoother variant with box drawing characters
 - [ ] Layers
 - [ ] Custom layouts via TUI
