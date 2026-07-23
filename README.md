@@ -92,20 +92,29 @@ Or via the flake for nix users:
 
 It's available under `ditto.packages.<system>.default`.
 
+Or download `ditto_linux_amd64.tar.gz` from the
+[Releases](https://github.com/arvingarciabtw/ditto/releases) page, extract,
+and move the binary to a directory on your `PATH`:
+
+```bash
+tar xzf ditto_linux_amd64.tar.gz
+mv ditto_linux_amd64 ~/.local/bin/ditto
+```
+
 Before executing the program with `ditto`, refer to the [permissions](#permissions) section below.
 
 ### Windows
 
-Download `ditto_windows_amd64.exe` from the [Releases](https://github.com/arvingarciabtw/ditto/releases) page, put it somewhere convenient (e.g. `C:\Users\<you>\bin` or `C:\Tools`), and add that folder to your `PATH`.
+Download `ditto_windows_amd64.zip` from the [Releases](https://github.com/arvingarciabtw/ditto/releases) page, put it somewhere convenient (e.g. `C:\Users\<you>\bin`), and add that folder to your `PATH`.
 
 ### macOS
 
-Download `ditto_darwin_arm64` (Apple Silicon) or `ditto_darwin_amd64` (Intel) from the [Releases](https://github.com/arvingarciabtw/ditto/releases) page, rename it to `dittokb`, place it in a directory on your `PATH` (e.g. `/usr/local/bin`), and make it executable with `chmod +x /path/to/dittokb`.
+Download `ditto_darwin_arm64.tar.gz` (Apple Silicon) or `ditto_darwin_amd64.tar.gz` (Intel) from the [Releases](https://github.com/arvingarciabtw/ditto/releases) page, extract it, rename the binary to dittokb, and move it to a directory on your PATH.
 
 > [!NOTE]
 > macOS support is **untested**. The keymapper is implemented and it compiles via CI, but it hasn't been verified on a physical Mac. If you try it, please report any issues!
 >
-> The binary is named `dittokb` rather than `ditto` on macOS, since `ditto` is already a built-in system utility (`/usr/bin/ditto`, used for copying directories/app bundles). All commands below that reference `ditto` should be run as `dittokb` instead.
+> The binary is named dittokb rather than ditto on macOS, since ditto is already a built-in system utility. All commands below that reference ditto should be run as `dittokb` instead.
 
 ## Permissions
 
