@@ -74,7 +74,7 @@ func TestCommands_StandardHelp(t *testing.T) {
 	if Commands.Standard.Help().Key != "d" {
 		t.Errorf("expected d, got %q", Commands.Standard.Help().Key)
 	}
-	if Commands.Standard.Help().Desc != "std" {
+	if Commands.Standard.Help().Desc != "standard" {
 		t.Errorf("expected std, got %q", Commands.Standard.Help().Desc)
 	}
 }

@@ -109,71 +109,46 @@ func warning(tw, th, nw, nh int) string {
 }
 
 func topBar(m Model, width int) string {
-	type legend struct {
-		name  string
-		style lipgloss.Style
-	}
-
-	items := []legend{
-		{name: "pinky", style: FingerStyle[keyboard.Pinky]},
-		{name: "ring", style: FingerStyle[keyboard.Ring]},
-		{name: "middle", style: FingerStyle[keyboard.Middle]},
-		{name: "index", style: FingerStyle[keyboard.Index]},
-		{name: "thumb", style: FingerStyle[keyboard.Thumb]},
-		{name: "any", style: FingerStyle[keyboard.Any]},
-	}
-
-	symbol := "•︎"
-
-	sb := strings.Builder{}
-	for _, legend := range items {
-		fmt.Fprintf(&sb, "%s %s ", legend.style.Render(symbol), StatusBarStyle.Render(legend.name))
-	}
-	legends := sb.String()
-
 	std := StatusBarStyle.Render(m.activeStandard)
 	if m.locked {
-		std = StatusBarStyle.Render("locked") + " " + StatusBarStyle.Render("•") + " " + std
+		std = std + " " + StatusBarStyle.Render("•") + " " + StatusBarStyle.Render("locked")
 	}
 
-	sw := width - lipgloss.Width(legends) - lipgloss.Width(std)
+	size := StatusBarStyle.Render(fmt.Sprintf("%d%%", m.activeSize))
+	layout := StatusBarStyle.Render(" • " + m.activeLayout + " • ")
+	actives := lipgloss.JoinHorizontal(lipgloss.Bottom, size, layout, std)
+
+	sw := width - lipgloss.Width(actives)
 	spacer := strings.Repeat(" ", max(0, sw))
 
-	return lipgloss.JoinHorizontal(lipgloss.Bottom, std, spacer, legends)
+	return lipgloss.JoinHorizontal(lipgloss.Bottom, spacer, actives)
 }
 
 func statusBar(m Model, width int) string {
-	size := StatusBarStyle.Render(fmt.Sprintf("%d%%", m.activeSize))
-	layout := StatusBarStyle.Render(" •︎ " + m.activeLayout)
-
-	actives := lipgloss.JoinHorizontal(lipgloss.Bottom, size, layout)
 	bindings := renderBindings(components.Commands, m.activeStandard)
-
-	sw := width - lipgloss.Width(actives) - lipgloss.Width(bindings)
+	sw := width - lipgloss.Width(bindings)
 	spacer := strings.Repeat(" ", max(0, sw))
-
-	return lipgloss.JoinHorizontal(lipgloss.Top, actives, spacer, bindings)
+	return lipgloss.JoinHorizontal(lipgloss.Top, spacer, bindings)
 }
 
 func renderBindings(c components.Bindings, activeStandard string) string {
 	standardDesc := c.Standard.Help().Desc
-	if activeStandard != "jis" && activeStandard != "ks" {
-		standardDesc = "standard"
-	}
+
 	parts := []string{
 		StatusBarStyle.Render(c.Layout.Help().Key) + " " + StatusBarStyle.Render(c.Layout.Help().Desc),
 		StatusBarStyle.Render(c.Size.Help().Key) + " " + StatusBarStyle.Render(c.Size.Help().Desc),
 		StatusBarStyle.Render(c.Standard.Help().Key) + " " + StatusBarStyle.Render(standardDesc),
 		StatusBarStyle.Render(c.Keycast.Help().Key) + " " + StatusBarStyle.Render(c.Keycast.Help().Desc),
 	}
+
 	switch activeStandard {
 	case "jis":
 		parts = append(parts, StatusBarStyle.Render(c.Kana.Help().Key)+" "+StatusBarStyle.Render(c.Kana.Help().Desc))
 	case "ks":
 		parts = append(parts, StatusBarStyle.Render(c.Hangeul.Help().Key)+" "+StatusBarStyle.Render(c.Hangeul.Help().Desc))
-	default:
-		parts = append(parts, StatusBarStyle.Render(c.HideKey.Help().Key)+" "+StatusBarStyle.Render(c.HideKey.Help().Desc))
 	}
+
+	parts = append(parts, StatusBarStyle.Render(c.HideKey.Help().Key)+" "+StatusBarStyle.Render(c.HideKey.Help().Desc))
 	return strings.Join(parts, StatusBarStyle.Render(" • "))
 }
 

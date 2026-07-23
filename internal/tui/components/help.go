@@ -26,7 +26,7 @@ var Commands = Bindings{
 	),
 	Standard: bkey.NewBinding(
 		bkey.WithKeys("d"),
-		bkey.WithHelp("d", "std"),
+		bkey.WithHelp("d", "standard"),
 	),
 	HideKey: bkey.NewBinding(
 		bkey.WithKeys("h"),
