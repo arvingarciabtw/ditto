@@ -14,18 +14,22 @@ jobs:
             goos: linux
             goarch: amd64
             ext: ''
+            archive_ext: .tar.gz
           - os: windows-latest
             goos: windows
             goarch: amd64
             ext: '.exe'
+            archive_ext: .zip
           - os: macos-latest
             goos: darwin
             goarch: arm64
             ext: ''
+            archive_ext: .tar.gz
           - os: macos-latest
             goos: darwin
             goarch: amd64
             ext: ''
+            archive_ext: .tar.gz
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -45,10 +49,18 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
         run: go build -o ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }} ./cmd/ditto/
 
+      - name: Package
+        run: |
+          if [ '${{ matrix.goos }}' = 'windows' ]; then
+            7z a ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.archive_ext }} ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }}
+          else
+            tar czf ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.archive_ext }} ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }}
+          fi
+
       - uses: actions/upload-artifact@v4
         with:
           name: ditto_${{ matrix.goos }}_${{ matrix.goarch }}
-          path: ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }}
+          path: ditto_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.archive_ext }}
 
   release:
     needs: build
