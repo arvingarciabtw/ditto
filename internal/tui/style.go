@@ -35,6 +35,17 @@ var KeyboardBorder = lipgloss.Border{
 	BottomRight: "'",
 }
 
+var KeyboardBorderBoxDraw = lipgloss.Border{
+	Top:         "─",
+	Bottom:      "─",
+	Left:        "│",
+	Right:       "│",
+	TopLeft:     "╭",
+	TopRight:    "╮",
+	BottomLeft:  "╰",
+	BottomRight: "╯",
+}
+
 var darkColors = map[keyboard.Finger]color.Color{
 	keyboard.Pinky:  lipgloss.BrightMagenta,
 	keyboard.Ring:   lipgloss.BrightBlue,

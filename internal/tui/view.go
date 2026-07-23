@@ -30,26 +30,32 @@ func (m Model) View() tea.View {
 		var ov string
 		var h int
 
+		border := KeyboardBorder
+		if m.keycastBoxDraw {
+			border = KeyboardBorderBoxDraw
+		}
+		overlayBase := lipgloss.NewStyle().Border(border).Padding(1, 3)
+
 		switch {
 		case m.showLayoutList:
 			h = min(th, max(11, min(th-4, 13)))
 			m.layoutList.VisibleCount = h - 8
-			ov = OverlayBase.BorderForeground(LayoutColor).Width(overlayWidth).Height(h).Render(m.layoutList.View(StatusBarStyle))
+			ov = overlayBase.BorderForeground(LayoutColor).Width(overlayWidth).Height(h).Render(m.layoutList.View(StatusBarStyle))
 		case m.showSizeList:
 			h = min(th, max(11, min(th-4, 13)))
 			m.sizeList.VisibleCount = h - 8
-			ov = OverlayBase.BorderForeground(SizeColor).Width(overlayWidth).Height(h).Render(m.sizeList.View(StatusBarStyle))
+			ov = overlayBase.BorderForeground(SizeColor).Width(overlayWidth).Height(h).Render(m.sizeList.View(StatusBarStyle))
 		case m.showStandardList:
 			h = min(th, max(11, min(th-4, 13)))
 			m.standardList.VisibleCount = h - 8
-			ov = OverlayBase.BorderForeground(StandardColor).Width(overlayWidth).Height(h).Render(m.standardList.View(StatusBarStyle))
+			ov = overlayBase.BorderForeground(StandardColor).Width(overlayWidth).Height(h).Render(m.standardList.View(StatusBarStyle))
 		case m.showQuitDialog:
 			h = 8
-			ov = OverlayBase.BorderForeground(QuitBorderColor).Width(overlayWidth).Height(h).Render(m.quitDialog.View())
+			ov = overlayBase.BorderForeground(QuitBorderColor).Width(overlayWidth).Height(h).Render(m.quitDialog.View())
 		case m.showModeList:
 			h = 8
 			m.modeList.VisibleCount = 2
-			ov = OverlayBase.BorderForeground(ModeColor).Width(overlayWidth).Height(h).Render(m.modeList.View(StatusBarStyle))
+			ov = overlayBase.BorderForeground(ModeColor).Width(overlayWidth).Height(h).Render(m.modeList.View(StatusBarStyle))
 		}
 
 		x := (tw - overlayWidth) / 2
