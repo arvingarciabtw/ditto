@@ -8,9 +8,9 @@
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/arvingarciabtw/ditto/blob/main/LICENSE)
 [![Charm in the Wild](https://img.shields.io/badge/featured-charm_in_the_wild-pink)](https://github.com/charm-and-friends/charm-in-the-wild#development-tools)
 
-<img width="1280" height="683" alt="ditto v1.1.0 demo" src="https://github.com/user-attachments/assets/08a694e0-b3af-4c65-924d-df8ecee237b5" />
+<img width="1280" height="683" alt="ditto v1.3.0 demo" src="https://github.com/user-attachments/assets/ed87d700-06e7-4395-9e7f-ef1eaa8eb295" />
 
-Ditto is a system-wide ASCII keyboard visualizer that mirrors your live keyboard inputs in real time, even when the terminal isn't in focus. It automatically syncs with your native terminal color scheme for seamless, interactive eye candy. If you love it, drop a ⭐ on the repo!
+Ditto is a system-wide ASCII keyboard visualizer and keycaster that mirrors your live keyboard inputs in real time, even when the terminal isn't in focus. It automatically syncs with your native terminal color scheme for seamless, interactive eye candy. If you love it, drop a ⭐ on the repo!
 
 ## Showcase
 
@@ -34,6 +34,7 @@ Ditto is a system-wide ASCII keyboard visualizer that mirrors your live keyboard
 - [Usage](#usage)
   - [Modes](#modes)
     - [Keycast](#keycast)
+  - [Visual](#visual)
   - [Lists](#lists)
     - [Size List](#size-list)
     - [Layout List](#layout-list)
@@ -149,12 +150,35 @@ Ditto stores its config file and custom layouts in a per-OS config directory:
 > [!NOTE]
 > macOS users: substitute `dittokb` for `ditto` in all commands below.
 
-There are five main commands you need to be aware of: `m`, `l`, `s`, `d`, and `c`. Pressing `m` lets you choose between default and keycast mode. Pressing `l` opens up the layout list, `s` opens up the size list, and `d` opens up the standard list. If your active standard is either JIS or KS, you can press `c` to toggle between the Latin alphabet and the standard's logograms.
+#### General
 
-> [!NOTE]
-> For the JIS and KS standards to render the logograms properly, you need to have a compatible font installed in your system. I recommend Noto Sans CJK JP and Noto Sans CJK KR.
+| Key         | Action                                    |
+| ----------- | ----------------------------------------- |
+| `m`         | Switch between default and keycast mode   |
+| `v`         | Toggle between ASCII and box draw render  |
+| `l`         | Open the layout list                      |
+| `s`         | Open the size list                        |
+| `d`         | Open the standard list                    |
+| `c`         | Toggle kana/hangeul overlay (JIS/KS only) |
+| `?`         | Toggle key bindings help                  |
+| `h`         | Toggle info bar                           |
+| `q` / `esc` | Open quit dialog                          |
+| `ctrl+c`    | Quit                                      |
 
-If you'd like to only see the keyboard, you can hide the informational text with `h`.
+#### Keycast mode
+
+| Key | Action                           |
+| --- | -------------------------------- |
+| `f` | Toggle finger color highlighting |
+
+#### Overlay navigation
+
+| Key          | Action              |
+| ------------ | ------------------- |
+| `j` / `down` | Move selection down |
+| `k` / `up`   | Move selection up   |
+| `enter`      | Confirm selection   |
+| `q` / `esc`  | Close overlay       |
 
 ### Modes
 
@@ -162,9 +186,15 @@ There are two modes: default and keycast. Default mode is a visualizer for your 
 
 #### Keycast
 
-<img width="1280" height="683" alt="keycast demo" src="https://github.com/user-attachments/assets/ccec563e-7ed9-47d7-af64-e4c1850d1aae" />
+<img width="1280" height="683" alt="keycast demo" src="https://github.com/user-attachments/assets/bd8c9167-76ad-4033-b399-46237323e838" />
 
 Ideal usage of this mode is by setting your terminal to float, and bumping up the font size to make the keys more visible. The bottom bar while in keycast mode provides the available commands: `h` for toggling the hidden state of the bar, `f` to add key colors based on finger mappings, `m` to choose between modes, and `q` to quit the program.
+
+### Visual
+
+<img width="1280" height="683" alt="visual demo" src="https://github.com/user-attachments/assets/643ac88d-a8dc-45e4-8a19-2cb1832cc14a" />
+
+To alter the visual look of the keyboard and the keys shown in keycast mode, press `v` to toggle between an ASCII variant and a box draw variant.
 
 ### Lists
 
@@ -289,7 +319,7 @@ Some features I'm thinking of implementing in the future, not in order.
 - [x] Physical layouts (standards)
 - [x] Cross-platform support
 - [x] Keycast mode
-- [ ] Smoother variant with box drawing characters
+- [x] Smoother variant with box drawing characters
 - [ ] Layers
 - [ ] Custom layouts via TUI
 
