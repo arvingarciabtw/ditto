@@ -5,15 +5,17 @@ import (
 )
 
 type Bindings struct {
-	Layout   bkey.Binding
-	Size     bkey.Binding
-	Standard bkey.Binding
-	HideKey  bkey.Binding
-	Kana     bkey.Binding
-	Hangeul  bkey.Binding
-	Keycast  bkey.Binding
-	Finger   bkey.Binding
-	Visual  bkey.Binding
+	Layout      bkey.Binding
+	Size        bkey.Binding
+	Standard    bkey.Binding
+	HideKey     bkey.Binding
+	Kana        bkey.Binding
+	Hangeul     bkey.Binding
+	Keycast     bkey.Binding
+	Finger      bkey.Binding
+	Visual      bkey.Binding
+	Quit        bkey.Binding
+	KeyBindings bkey.Binding
 }
 
 var Commands = Bindings{
@@ -52,5 +54,13 @@ var Commands = Bindings{
 	Visual: bkey.NewBinding(
 		bkey.WithKeys("v"),
 		bkey.WithHelp("v", "visual"),
+	),
+	Quit: bkey.NewBinding(
+		bkey.WithKeys("q"),
+		bkey.WithHelp("q", "quit"),
+	),
+	KeyBindings: bkey.NewBinding(
+		bkey.WithKeys("?"),
+		bkey.WithHelp("?", "key bindings"),
 	),
 }
