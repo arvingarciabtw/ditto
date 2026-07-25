@@ -16,6 +16,8 @@ type ListModel struct {
 	Title        string
 	AccentColor  color.Color
 	VisibleCount int
+	HideEnter    bool
+	ContentWidth int
 }
 
 type ListAction int
@@ -75,15 +77,25 @@ func (l ListModel) View(statusBarStyle lipgloss.Style) string {
 		b.WriteString(line)
 		b.WriteString("\n")
 	}
-	for i := len(itemLines); i < l.VisibleCount; i++ {
-		b.WriteString("\n")
+	if len(itemLines) < l.VisibleCount {
+		for i := len(itemLines); i < l.VisibleCount; i++ {
+			b.WriteString("\n")
+		}
 	}
 
 	b.WriteString("\n")
 
-	help := statusBarStyle.Render("↵ / enter • q / quit")
+	helpText := "↵ / enter • q / quit"
+	if l.HideEnter {
+		helpText = "q / quit"
+	}
+	help := statusBarStyle.Render(helpText)
 	helpWidth := lipgloss.Width(help)
-	padding := maxWidth - helpWidth
+	footerWidth := maxWidth
+	if l.ContentWidth > 0 {
+		footerWidth = l.ContentWidth
+	}
+	padding := footerWidth - helpWidth
 	if padding > 0 {
 		b.WriteString(strings.Repeat(" ", padding))
 	}
@@ -100,6 +112,9 @@ func (l ListModel) windowStart() int {
 }
 
 func (l ListModel) visibleItems() []string {
+	if l.VisibleCount <= 0 {
+		return nil
+	}
 	start := l.windowStart()
 	end := start + l.VisibleCount
 	if end > len(l.Items) {

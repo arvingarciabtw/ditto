@@ -35,6 +35,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.showSizeList = false
 				m.showStandardList = false
 				m.showModeList = false
+				m.showHelpList = false
 			}
 			return m, nil
 		case "s":
@@ -43,6 +44,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.showLayoutList = false
 				m.showStandardList = false
 				m.showModeList = false
+				m.showHelpList = false
 			}
 			return m, nil
 		case "d":
@@ -51,6 +53,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.showLayoutList = false
 				m.showSizeList = false
 				m.showModeList = false
+				m.showHelpList = false
 			}
 			return m, nil
 		case "h":
@@ -70,6 +73,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.showSizeList = false
 			m.showStandardList = false
 			m.showQuitDialog = false
+			m.showHelpList = false
+			return m, cmd
+		case "?":
+			m.showHelpList = !m.showHelpList
+			m.showLayoutList = false
+			m.showSizeList = false
+			m.showStandardList = false
+			m.showModeList = false
+			m.showQuitDialog = false
 			return m, cmd
 		}
 
@@ -84,6 +96,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.handleQuitDialogUpdate(msg)
 		case m.showModeList:
 			return m.handleModeListUpdate(msg)
+		case m.showHelpList:
+			return m.handleHelpListUpdate(msg)
 		default:
 			return m.handleGlobalKeys(msg)
 		}
@@ -229,6 +243,19 @@ func (m Model) handleModeListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		m.keycastKeys = nil
 	case components.ListCancel:
 		m.showModeList = false
+	}
+
+	return m, nil
+}
+
+func (m Model) handleHelpListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
+	var action components.ListAction
+	m.helpList, action = m.helpList.Update(msg)
+
+	switch action {
+	case components.ListCancel:
+		m.showHelpList = false
+		return m, nil
 	}
 
 	return m, nil

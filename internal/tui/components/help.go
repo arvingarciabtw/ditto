@@ -19,21 +19,25 @@ type Bindings struct {
 }
 
 var Commands = Bindings{
-	Layout: bkey.NewBinding(
-		bkey.WithKeys("l"),
-		bkey.WithHelp("l", "layout"),
-	),
 	Size: bkey.NewBinding(
 		bkey.WithKeys("s"),
 		bkey.WithHelp("s", "size"),
+	),
+	Layout: bkey.NewBinding(
+		bkey.WithKeys("l"),
+		bkey.WithHelp("l", "layout"),
 	),
 	Standard: bkey.NewBinding(
 		bkey.WithKeys("d"),
 		bkey.WithHelp("d", "standard"),
 	),
-	HideKey: bkey.NewBinding(
-		bkey.WithKeys("h"),
-		bkey.WithHelp("h", "hide"),
+	Visual: bkey.NewBinding(
+		bkey.WithKeys("v"),
+		bkey.WithHelp("v", "visual"),
+	),
+	Keycast: bkey.NewBinding(
+		bkey.WithKeys("m"),
+		bkey.WithHelp("m", "mode"),
 	),
 	Kana: bkey.NewBinding(
 		bkey.WithKeys("c"),
@@ -43,17 +47,13 @@ var Commands = Bindings{
 		bkey.WithKeys("c"),
 		bkey.WithHelp("c", "chars"),
 	),
-	Keycast: bkey.NewBinding(
-		bkey.WithKeys("m"),
-		bkey.WithHelp("m", "mode"),
-	),
 	Finger: bkey.NewBinding(
 		bkey.WithKeys("f"),
 		bkey.WithHelp("f", "finger"),
 	),
-	Visual: bkey.NewBinding(
-		bkey.WithKeys("v"),
-		bkey.WithHelp("v", "visual"),
+	HideKey: bkey.NewBinding(
+		bkey.WithKeys("h"),
+		bkey.WithHelp("h", "hide"),
 	),
 	Quit: bkey.NewBinding(
 		bkey.WithKeys("q"),

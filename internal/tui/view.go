@@ -14,7 +14,7 @@ import (
 )
 
 func (m Model) View() tea.View {
-	const overlayWidth = 30
+	const defaultOverlayWidth = 30
 
 	var s string
 	if m.keycastMode {
@@ -23,7 +23,7 @@ func (m Model) View() tea.View {
 		s = base(m)
 	}
 
-	hasOverlay := m.showLayoutList || m.showSizeList || m.showStandardList || m.showQuitDialog || m.showModeList
+	hasOverlay := m.showLayoutList || m.showSizeList || m.showStandardList || m.showQuitDialog || m.showModeList || m.showHelpList
 
 	if hasOverlay {
 		tw, th := m.terminalWidth, m.terminalHeight
@@ -35,18 +35,23 @@ func (m Model) View() tea.View {
 			ob = OverlayBoxDraw
 		}
 
+		overlayWidth := defaultOverlayWidth
+		if m.showHelpList {
+			overlayWidth = 36
+		}
+
 		switch {
 		case m.showLayoutList:
 			h = min(th, max(11, min(th-4, 13)))
-			m.layoutList.VisibleCount = h - 8
+			m.layoutList.VisibleCount = max(0, h-8)
 			ov = ob.BorderForeground(LayoutColor).Width(overlayWidth).Height(h).Render(m.layoutList.View(StatusBarStyle))
 		case m.showSizeList:
 			h = min(th, max(11, min(th-4, 13)))
-			m.sizeList.VisibleCount = h - 8
+			m.sizeList.VisibleCount = max(0, h-8)
 			ov = ob.BorderForeground(SizeColor).Width(overlayWidth).Height(h).Render(m.sizeList.View(StatusBarStyle))
 		case m.showStandardList:
 			h = min(th, max(11, min(th-4, 13)))
-			m.standardList.VisibleCount = h - 8
+			m.standardList.VisibleCount = max(0, h-8)
 			ov = ob.BorderForeground(StandardColor).Width(overlayWidth).Height(h).Render(m.standardList.View(StatusBarStyle))
 		case m.showQuitDialog:
 			h = 8
@@ -55,6 +60,11 @@ func (m Model) View() tea.View {
 			h = 8
 			m.modeList.VisibleCount = 2
 			ov = ob.BorderForeground(ModeColor).Width(overlayWidth).Height(h).Render(m.modeList.View(StatusBarStyle))
+		case m.showHelpList:
+			h = min(th, max(13, min(th-4, 17)))
+			m.helpList.VisibleCount = max(0, h-8)
+			m.helpList.ContentWidth = overlayWidth - 8
+			ov = ob.BorderForeground(HelpColor).Width(overlayWidth).Height(h).Render(m.helpList.View(StatusBarStyle))
 		}
 
 		x := (tw - overlayWidth) / 2
