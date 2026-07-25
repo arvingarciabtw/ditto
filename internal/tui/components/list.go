@@ -18,6 +18,7 @@ type ListModel struct {
 	VisibleCount int
 	HideEnter    bool
 	ContentWidth int
+	FooterLeft   bool
 }
 
 type ListAction int
@@ -91,15 +92,19 @@ func (l ListModel) View(statusBarStyle lipgloss.Style) string {
 	}
 	help := statusBarStyle.Render(helpText)
 	helpWidth := lipgloss.Width(help)
-	footerWidth := maxWidth
-	if l.ContentWidth > 0 {
-		footerWidth = l.ContentWidth
+	if l.FooterLeft {
+		b.WriteString(help)
+	} else {
+		footerWidth := maxWidth
+		if l.ContentWidth > 0 {
+			footerWidth = l.ContentWidth
+		}
+		padding := footerWidth - helpWidth
+		if padding > 0 {
+			b.WriteString(strings.Repeat(" ", padding))
+		}
+		b.WriteString(help)
 	}
-	padding := footerWidth - helpWidth
-	if padding > 0 {
-		b.WriteString(strings.Repeat(" ", padding))
-	}
-	b.WriteString(help)
 
 	return b.String()
 }

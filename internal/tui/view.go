@@ -36,9 +36,6 @@ func (m Model) View() tea.View {
 		}
 
 		overlayWidth := defaultOverlayWidth
-		if m.showHelpList {
-			overlayWidth = 36
-		}
 
 		switch {
 		case m.showLayoutList:
@@ -61,9 +58,8 @@ func (m Model) View() tea.View {
 			m.modeList.VisibleCount = 2
 			ov = ob.BorderForeground(ModeColor).Width(overlayWidth).Height(h).Render(m.modeList.View(StatusBarStyle))
 		case m.showHelpList:
-			h = min(th, max(13, min(th-4, 17)))
+			h = min(th, max(13, min(th-4, 18)))
 			m.helpList.VisibleCount = max(0, h-8)
-			m.helpList.ContentWidth = overlayWidth - 8
 			ov = ob.BorderForeground(HelpColor).Width(overlayWidth).Height(h).Render(m.helpList.View(StatusBarStyle))
 		}
 
