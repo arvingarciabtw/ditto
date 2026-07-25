@@ -30,32 +30,31 @@ func (m Model) View() tea.View {
 		var ov string
 		var h int
 
-		border := KeyboardBorder
+		ob := OverlayBase
 		if m.keycastBoxDraw {
-			border = KeyboardBorderBoxDraw
+			ob = OverlayBoxDraw
 		}
-		overlayBase := lipgloss.NewStyle().Border(border).Padding(1, 3)
 
 		switch {
 		case m.showLayoutList:
 			h = min(th, max(11, min(th-4, 13)))
 			m.layoutList.VisibleCount = h - 8
-			ov = overlayBase.BorderForeground(LayoutColor).Width(overlayWidth).Height(h).Render(m.layoutList.View(StatusBarStyle))
+			ov = ob.BorderForeground(LayoutColor).Width(overlayWidth).Height(h).Render(m.layoutList.View(StatusBarStyle))
 		case m.showSizeList:
 			h = min(th, max(11, min(th-4, 13)))
 			m.sizeList.VisibleCount = h - 8
-			ov = overlayBase.BorderForeground(SizeColor).Width(overlayWidth).Height(h).Render(m.sizeList.View(StatusBarStyle))
+			ov = ob.BorderForeground(SizeColor).Width(overlayWidth).Height(h).Render(m.sizeList.View(StatusBarStyle))
 		case m.showStandardList:
 			h = min(th, max(11, min(th-4, 13)))
 			m.standardList.VisibleCount = h - 8
-			ov = overlayBase.BorderForeground(StandardColor).Width(overlayWidth).Height(h).Render(m.standardList.View(StatusBarStyle))
+			ov = ob.BorderForeground(StandardColor).Width(overlayWidth).Height(h).Render(m.standardList.View(StatusBarStyle))
 		case m.showQuitDialog:
 			h = 8
-			ov = overlayBase.BorderForeground(QuitBorderColor).Width(overlayWidth).Height(h).Render(m.quitDialog.View())
+			ov = ob.BorderForeground(QuitBorderColor).Width(overlayWidth).Height(h).Render(m.quitDialog.View())
 		case m.showModeList:
 			h = 8
 			m.modeList.VisibleCount = 2
-			ov = overlayBase.BorderForeground(ModeColor).Width(overlayWidth).Height(h).Render(m.modeList.View(StatusBarStyle))
+			ov = ob.BorderForeground(ModeColor).Width(overlayWidth).Height(h).Render(m.modeList.View(StatusBarStyle))
 		}
 
 		x := (tw - overlayWidth) / 2
@@ -75,7 +74,11 @@ func base(m Model) string {
 		return ""
 	}
 
-	kb := keyboard.Render(m.activeLayout, m.activeSize, m.activeStandard, m.pressedKeys, FingerStyle, FingerActive)
+	style := ASCIIStyle
+	if m.keycastBoxDraw {
+		style = BoxDrawStyle
+	}
+	kb := keyboard.Render(m.activeLayout, m.activeSize, m.activeStandard, m.pressedKeys, FingerStyle, FingerActive, m.keycastBoxDraw, style)
 	kh := strings.Count(kb, "\n") + 1
 	kw := 0
 	for line := range strings.SplitSeq(kb, "\n") {
@@ -154,6 +157,7 @@ func renderBindings(c components.Bindings, activeStandard string) string {
 		parts = append(parts, StatusBarStyle.Render(c.Hangeul.Help().Key)+" "+StatusBarStyle.Render(c.Hangeul.Help().Desc))
 	}
 
+	parts = append(parts, StatusBarStyle.Render(c.Visual.Help().Key)+" "+StatusBarStyle.Render(c.Visual.Help().Desc))
 	parts = append(parts, StatusBarStyle.Render(c.HideKey.Help().Key)+" "+StatusBarStyle.Render(c.HideKey.Help().Desc))
 	return strings.Join(parts, StatusBarStyle.Render(" • "))
 }
@@ -198,9 +202,9 @@ func keycastView(m Model) string {
 		return lipgloss.Place(tw, th, lipgloss.Center, lipgloss.Center, row)
 	}
 
-	help := "h hide • m mode • q quit"
+	help := "v visual • h hide • m mode • q quit"
 	if m.keycastMode {
-		help = "b box draw • f finger color • m mode • h hide •  q quit"
+		help = "v visual • f finger color • m mode • h hide •  q quit"
 	}
 	cmd := StatusBarStyle.Render(help)
 	cmdLine := lipgloss.Place(tw, 1, lipgloss.Center, lipgloss.Center, cmd)

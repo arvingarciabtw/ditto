@@ -34,13 +34,20 @@ const (
 
 type Finger int
 
+// TODO: need to refactor key rendering,
+// Rightless and Leftless is a bit unclear.
+// Perhaps do corners to make it more explicit.
+
 type Key struct {
-	Label     string
-	Width     int
-	Finger    Finger
-	Gap       bool
-	Rightless bool
-	Leftless  bool
-	DivLabel  string
-	EvCode    uint16
+	Label             string
+	Width             int
+	Finger            Finger
+	Gap               bool
+	GapAlt            bool // super hacky, need to change this
+	Rightless         bool
+	Leftless          bool
+	BottomLeftless    bool
+	BottomLeftlessAlt bool // super hacky, need to change this
+	DivLabel          string
+	EvCode            uint16
 }

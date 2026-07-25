@@ -16,7 +16,7 @@ import (
 	"github.com/arvingarciabtw/ditto/internal/keyboard/standards"
 )
 
-func Render(layout string, size int, standard string, pressedKeys map[uint16]bool, fingerStyle, fingerActive map[Finger]lipgloss.Style) string {
+func Render(layout string, size int, standard string, pressedKeys map[uint16]bool, fingerStyle, fingerActive map[Finger]lipgloss.Style, boxDraw bool, boxDrawStyle lipgloss.Style) string {
 	sd, ok := resolveStandard(standard)
 	if !ok {
 		return ""
@@ -54,7 +54,7 @@ func Render(layout string, size int, standard string, pressedKeys map[uint16]boo
 		applyHangeul(remapped, shiftHeld)
 	}
 	applyModifiers(remapped, shiftHeld, shiftMap, altGrHeld, altGrMap)
-	return renderKeys(remapped, pressed, fingerStyle, fingerActive)
+	return renderKeys(remapped, pressed, fingerStyle, fingerActive, boxDraw, boxDrawStyle)
 }
 
 func applyLayout(keys []Key, layoutMap map[string]string) []Key {
@@ -255,33 +255,56 @@ func applyHangeul(keys [][]Key, shiftHeld bool) {
 	}
 }
 
-func renderKeys(keys [][]Key, pressed [][]bool, fingerStyle, fingerActive map[Finger]lipgloss.Style) string {
+func renderKeys(keys [][]Key, pressed [][]bool, fingerStyle, fingerActive map[Finger]lipgloss.Style, boxDraw bool, boxDrawStyle lipgloss.Style) string {
 	var lines []string
 	for i, kr := range keys {
 		if i == 0 {
-			lines = append(lines, topLine(kr))
+			lines = append(lines, topLine(kr, boxDraw, boxDrawStyle))
 		}
-		lines = append(lines, midLine(kr, pressed[i], fingerStyle, fingerActive))
+		lines = append(lines, midLine(kr, pressed[i], fingerStyle, fingerActive, boxDraw, boxDrawStyle))
 		if i < len(keys)-1 {
-			lines = append(lines, divLine(kr, fingerStyle))
+			lines = append(lines, divLine(kr, pressed[i], fingerStyle, fingerActive, boxDraw, boxDrawStyle))
 		} else {
-			lines = append(lines, botLine(kr))
+			lines = append(lines, botLine(kr, boxDraw, boxDrawStyle))
 		}
 	}
 	return strings.Join(lines, "\n")
 }
 
-func topLine(keys []Key) string {
+func topLine(keys []Key, boxDraw bool, boxDrawStyle lipgloss.Style) string {
 	var b strings.Builder
-	b.WriteByte(',')
-	for _, k := range keys {
-		b.WriteString(strings.Repeat("-", k.Width))
-		b.WriteByte(',')
+	if boxDraw {
+		b.WriteString(boxDrawStyle.Render("╭"))
+	} else {
+		b.WriteString(boxDrawStyle.Render(","))
+	}
+	for i, k := range keys {
+		if boxDraw {
+			b.WriteString(boxDrawStyle.Render(strings.Repeat("─", k.Width)))
+		} else {
+			b.WriteString(boxDrawStyle.Render(strings.Repeat("-", k.Width)))
+		}
+		if i < len(keys)-1 {
+			if boxDraw {
+				if k.Leftless || k.Rightless {
+					b.WriteString(boxDrawStyle.Render("─"))
+				} else {
+					b.WriteString(boxDrawStyle.Render("┬"))
+				}
+			} else {
+				b.WriteString(boxDrawStyle.Render(","))
+			}
+		}
+	}
+	if boxDraw {
+		b.WriteString(boxDrawStyle.Render("╮"))
+	} else {
+		b.WriteString(boxDrawStyle.Render(","))
 	}
 	return b.String()
 }
 
-func midLine(keys []Key, pressed []bool, fingerStyle, fingerActive map[Finger]lipgloss.Style) string {
+func midLine(keys []Key, pressed []bool, fingerStyle, fingerActive map[Finger]lipgloss.Style, boxDraw bool, boxDrawStyle lipgloss.Style) string {
 	var b strings.Builder
 	for i, k := range keys {
 		label := k.Label
@@ -293,9 +316,15 @@ func midLine(keys []Key, pressed []bool, fingerStyle, fingerActive map[Finger]li
 
 		if i == 0 {
 			if isPressed {
-				b.WriteString(fingerActive[k.Finger].Render("|"))
+				if boxDraw {
+					b.WriteString(fingerActive[k.Finger].Render("│"))
+				} else {
+					b.WriteString(fingerActive[k.Finger].Render("|"))
+				}
+			} else if boxDraw {
+				b.WriteString(boxDrawStyle.Render("│"))
 			} else {
-				b.WriteByte('|')
+				b.WriteString(boxDrawStyle.Render("|"))
 			}
 		}
 
@@ -314,51 +343,170 @@ func midLine(keys []Key, pressed []bool, fingerStyle, fingerActive map[Finger]li
 				if nextPressed && !isPressed {
 					f = keys[i+1].Finger
 				}
-				b.WriteString(fingerActive[f].Render("|"))
+				if boxDraw {
+					b.WriteString(fingerActive[f].Render("│"))
+				} else {
+					b.WriteString(fingerActive[f].Render("|"))
+				}
 			} else {
-				b.WriteByte('|')
+				if boxDraw {
+					b.WriteString(boxDrawStyle.Render("│"))
+				} else {
+					b.WriteString(boxDrawStyle.Render("|"))
+				}
 			}
 		}
 	}
 	return b.String()
 }
 
-func divLine(keys []Key, fingerStyle map[Finger]lipgloss.Style) string {
+func divLine(keys []Key, pressed []bool, fingerStyle, fingerActive map[Finger]lipgloss.Style, boxDraw bool, boxDrawStyle lipgloss.Style) string {
 	var b strings.Builder
-	b.WriteByte('|')
-	for _, k := range keys {
+	if boxDraw {
+		b.WriteString(boxDrawStyle.Render("├"))
+	} else {
+		b.WriteString(boxDrawStyle.Render("|"))
+	}
+	afterGap := false
+	for i, k := range keys {
 		if k.Gap {
 			if k.DivLabel != "" {
-				b.WriteString(fingerStyle[k.Finger].Render(centerLabel(k.DivLabel, k.Width)))
+				isPressed := i < len(pressed) && pressed[i]
+				if isPressed {
+					b.WriteString(fingerActive[k.Finger].Render(centerLabel(k.DivLabel, k.Width)))
+				} else {
+					b.WriteString(fingerStyle[k.Finger].Render(centerLabel(k.DivLabel, k.Width)))
+				}
 			} else {
 				b.WriteString(strings.Repeat(" ", k.Width))
 			}
-			if k.Rightless {
-				b.WriteByte(',')
+			if i == len(keys)-1 {
+				if boxDraw {
+					b.WriteString(boxDrawStyle.Render("│"))
+				} else {
+					b.WriteString(boxDrawStyle.Render("|"))
+				}
+			} else if k.Rightless {
+				if boxDraw {
+					b.WriteString(boxDrawStyle.Render("╭"))
+				} else {
+					b.WriteString(boxDrawStyle.Render(","))
+				}
 			} else {
-				b.WriteByte('\'')
+				if boxDraw {
+					if k.GapAlt {
+						b.WriteString(boxDrawStyle.Render("│"))
+						continue
+					}
+					if k.BottomLeftless {
+						b.WriteString(boxDrawStyle.Render("╰"))
+						continue
+					}
+					b.WriteString(boxDrawStyle.Render("├"))
+				} else {
+					b.WriteString(boxDrawStyle.Render("'"))
+				}
+				afterGap = true
 			}
 			continue
 		}
-		b.WriteString(strings.Repeat("-", k.Width))
-		if k.Leftless {
-			b.WriteByte(',')
+		if boxDraw {
+			b.WriteString(boxDrawStyle.Render(strings.Repeat("─", k.Width)))
 		} else {
-			b.WriteByte('\'')
+			b.WriteString(boxDrawStyle.Render(strings.Repeat("-", k.Width)))
+		}
+		if i == len(keys)-1 {
+			if boxDraw {
+				b.WriteString(boxDrawStyle.Render("┤"))
+			} else {
+				b.WriteString(boxDrawStyle.Render("|"))
+			}
+		} else if k.Leftless {
+			if boxDraw {
+				if k.BottomLeftlessAlt {
+					b.WriteString(boxDrawStyle.Render("╯"))
+					continue
+				}
+				if k.BottomLeftless {
+					b.WriteString(boxDrawStyle.Render("╮"))
+					continue
+				}
+				if k.Leftless || k.Rightless {
+					b.WriteString(boxDrawStyle.Render("┬"))
+				}
+			} else {
+				if k.BottomLeftlessAlt {
+					b.WriteString(boxDrawStyle.Render("'"))
+					continue
+				}
+				b.WriteString(boxDrawStyle.Render(","))
+			}
+		} else if boxDraw && i+1 < len(keys) {
+			next := keys[i+1]
+			isArrow := next.Label == "←" || next.Label == "→" || next.Label == "↑" || next.Label == "↓"
+			if next.Gap && !isArrow {
+				if k.BottomLeftless {
+					b.WriteString(boxDrawStyle.Render("X"))
+					continue
+				}
+				b.WriteString(boxDrawStyle.Render("┤"))
+			} else if isArrow {
+				if next.Rightless {
+					b.WriteString(boxDrawStyle.Render("┐"))
+				} else {
+					b.WriteString(boxDrawStyle.Render("┴"))
+				}
+			} else if afterGap {
+				if k.Leftless || k.Rightless {
+					b.WriteString(boxDrawStyle.Render("─"))
+				} else {
+					b.WriteString(boxDrawStyle.Render("┴"))
+				}
+			} else {
+				b.WriteString(boxDrawStyle.Render("┴"))
+			}
+		} else {
+			if boxDraw {
+				b.WriteString(boxDrawStyle.Render("┴"))
+			} else {
+				b.WriteString(boxDrawStyle.Render("'"))
+			}
 		}
 	}
 	return b.String()
 }
 
-func botLine(keys []Key) string {
+func botLine(keys []Key, boxDraw bool, boxDrawStyle lipgloss.Style) string {
 	var b strings.Builder
-	b.WriteByte('\'')
-	for _, k := range keys {
-		b.WriteString(strings.Repeat("-", k.Width))
-		if k.Leftless {
-			b.WriteByte(',')
+	if boxDraw {
+		b.WriteString(boxDrawStyle.Render("╰"))
+	} else {
+		b.WriteString(boxDrawStyle.Render("'"))
+	}
+	for i, k := range keys {
+		if boxDraw {
+			b.WriteString(boxDrawStyle.Render(strings.Repeat("─", k.Width)))
 		} else {
-			b.WriteByte('\'')
+			b.WriteString(boxDrawStyle.Render(strings.Repeat("-", k.Width)))
+		}
+		if i == len(keys)-1 {
+			if boxDraw {
+				b.WriteString(boxDrawStyle.Render("╯"))
+			} else {
+				b.WriteString(boxDrawStyle.Render("'"))
+			}
+		} else if k.Leftless {
+			if boxDraw {
+				b.WriteString(boxDrawStyle.Render("╮"))
+			} else {
+				b.WriteString(boxDrawStyle.Render(","))
+			}
+		} else {
+			if boxDraw {
+				b.WriteString(boxDrawStyle.Render("┴"))
+			} else {
+				b.WriteString(boxDrawStyle.Render("'"))
+			}
 		}
 	}
 	return b.String()

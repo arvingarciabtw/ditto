@@ -17,8 +17,9 @@ var size60ISO = [][]base.Key{
 		{Label: base.KeyBackspace.Label, Width: base.U2p75, Finger: base.KeyBackspace.Finger, EvCode: base.KeyBackspace.EvCode},
 	},
 	{
-		base.KeyTab, base.KeyQ, base.KeyW, base.KeyE, base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace, base.KeyRightBrace,
-		{Label: "Ent↵", Width: base.U2, Finger: base.KeyEnterISO.Finger, EvCode: base.KeyEnterISO.EvCode, Gap: base.KeyEnterISO.Gap},
+		base.KeyTab, base.KeyQ, base.KeyW, base.KeyE, base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace,
+		{Label: base.KeyRightBrace.Label, Width: base.KeyRightBrace.Width, Finger: base.KeyRightBrace.Finger, EvCode: base.KeyRightBrace.EvCode, Leftless: true, BottomLeftlessAlt: true},
+		{Label: "Ent↵", Width: base.U2, Finger: base.KeyEnterISO.Finger, EvCode: base.KeyEnterISO.EvCode, Gap: base.KeyEnterISO.Gap, Leftless: true, BottomLeftless: true},
 	},
 	{
 		base.KeyCapsLock, base.KeyA, base.KeyS, base.KeyD, base.KeyF, base.KeyG, base.KeyH, base.KeyJ, base.KeyK, base.KeyL, base.KeySemicolon, base.KeyApostrophe,
@@ -44,7 +45,8 @@ var size65ISO = [][]base.Key{
 		{Label: base.KeyLightsToggle.Label, Width: base.KeyLightsToggle.Width, Finger: base.Any, EvCode: base.KeyLightsToggle.EvCode},
 	},
 	{
-		base.KeyTab, base.KeyQ, base.KeyW, base.KeyE, base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace, base.KeyRightBrace,
+		base.KeyTab, base.KeyQ, base.KeyW, base.KeyE, base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace,
+		{Label: base.KeyRightBrace.Label, Width: base.KeyRightBrace.Width, Finger: base.KeyRightBrace.Finger, EvCode: base.KeyRightBrace.EvCode, Leftless: true, BottomLeftlessAlt: true},
 		{Label: "Ent↵", Width: base.U2, Finger: base.KeyEnterISO.Finger, EvCode: base.KeyEnterISO.EvCode, Gap: base.KeyEnterISO.Gap},
 		{Label: base.KeyHome.Label, Width: base.KeyHome.Width, Finger: base.Any, EvCode: base.KeyHome.EvCode},
 	},
@@ -82,7 +84,8 @@ var size75ISO = [][]base.Key{
 		{Label: base.KeyPageUp.Label, Width: base.KeyPageUp.Width, Finger: base.Any, EvCode: base.KeyPageUp.EvCode},
 	},
 	{
-		base.KeyTab, base.KeyQ, base.KeyW, base.KeyE, base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace, base.KeyRightBrace,
+		base.KeyTab, base.KeyQ, base.KeyW, base.KeyE, base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace,
+		{Label: base.KeyRightBrace.Label, Width: base.KeyRightBrace.Width, Finger: base.KeyRightBrace.Finger, EvCode: base.KeyRightBrace.EvCode, Leftless: true, BottomLeftlessAlt: true},
 		base.KeyEnterISO,
 		{Label: base.KeyPageDown.Label, Width: base.KeyPageDown.Width, Finger: base.Any, EvCode: base.KeyPageDown.EvCode},
 	},
@@ -121,8 +124,10 @@ var size80ISO = [][]base.Key{
 	{
 		{Label: "Tab", Width: base.U2p5, Finger: base.KeyTab.Finger, EvCode: base.KeyTab.EvCode},
 		base.KeyQ, base.KeyW, base.KeyE,
-		base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace, base.KeyRightBrace, base.KeyEnterISO,
-		{Label: base.KeyBlank.Label, Width: base.KeyBlank.Width, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true},
+		base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace,
+		{Label: base.KeyRightBrace.Label, Width: base.KeyRightBrace.Width, Finger: base.KeyRightBrace.Finger, EvCode: base.KeyRightBrace.EvCode, Leftless: true, BottomLeftlessAlt: true},
+		{Label: base.KeyEnterISO.Label, Width: base.KeyEnterISO.Width, Finger: base.KeyEnterISO.Finger, EvCode: base.KeyEnterISO.EvCode, Gap: base.KeyEnterISO.Gap, GapAlt: true},
+		{Label: base.KeyBlank.Label, Width: base.KeyBlank.Width, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true, Leftless: true, BottomLeftless: true},
 		base.KeyDelete, base.KeyEnd, base.KeyPageDown,
 	},
 	{
@@ -130,7 +135,7 @@ var size80ISO = [][]base.Key{
 		base.KeyA, base.KeyS, base.KeyD, base.KeyF, base.KeyG, base.KeyH, base.KeyJ, base.KeyK, base.KeyL, base.KeySemicolon, base.KeyApostrophe, base.KeyPound,
 		base.KeyEnterISOBlank,
 		{Label: base.KeyBlank.Label, Width: base.U2, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true, Rightless: true, Leftless: false},
-		{Label: base.KeyBlank.Label, Width: base.U1, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: false, Rightless: true, Leftless: true},
+		{Label: base.KeyBlank.Label, Width: base.U1, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: false, Rightless: true, Leftless: true, BottomLeftless: true},
 		{Label: base.KeyBlank.Label, Width: base.U1, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true, Rightless: false, Leftless: false},
 	},
 	{
@@ -166,7 +171,8 @@ var size96ISO = [][]base.Key{
 		base.KeyBackspace, base.KeyNumLock, base.KeyPadSlash, base.KeyPadAsterisk, base.KeyPadMinus,
 	},
 	{
-		base.KeyTab, base.KeyQ, base.KeyW, base.KeyE, base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace, base.KeyRightBrace,
+		base.KeyTab, base.KeyQ, base.KeyW, base.KeyE, base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace,
+		{Label: base.KeyRightBrace.Label, Width: base.KeyRightBrace.Width, Finger: base.KeyRightBrace.Finger, EvCode: base.KeyRightBrace.EvCode, Leftless: true, BottomLeftlessAlt: true},
 		base.KeyEnterISO, base.KeyPad7, base.KeyPad8, base.KeyPad9, base.KeyPadPlus,
 	},
 	{
@@ -214,9 +220,12 @@ var size100ISO = [][]base.Key{
 	{
 		{Label: "Tab", Width: base.U2p5, Finger: base.KeyTab.Finger, EvCode: base.KeyTab.EvCode},
 		base.KeyQ, base.KeyW, base.KeyE,
-		base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace, base.KeyRightBrace, base.KeyEnterISO,
-		{Label: base.KeyBlank.Label, Width: base.KeyBlank.Width, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true},
-		base.KeyDelete, base.KeyEnd, base.KeyPageDown,
+		base.KeyR, base.KeyT, base.KeyY, base.KeyU, base.KeyI, base.KeyO, base.KeyP, base.KeyLeftBrace,
+		{Label: base.KeyRightBrace.Label, Width: base.KeyRightBrace.Width, Finger: base.KeyRightBrace.Finger, EvCode: base.KeyRightBrace.EvCode, Leftless: true, BottomLeftlessAlt: true},
+		{Label: base.KeyEnterISO.Label, Width: base.KeyEnterISO.Width, Finger: base.KeyEnterISO.Finger, EvCode: base.KeyEnterISO.EvCode, Gap: base.KeyEnterISO.Gap, GapAlt: true},
+		{Label: base.KeyBlank.Label, Width: base.KeyBlank.Width, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true, Leftless: true, BottomLeftless: true},
+		base.KeyDelete, base.KeyEnd,
+		{Label: base.KeyPageDown.Label, Width: base.KeyPageDown.Width, Finger: base.KeyPageDown.Finger, EvCode: base.KeyPageDown.EvCode, Leftless: true, BottomLeftlessAlt: true},
 		{Label: base.KeyBlank.Label, Width: base.KeyBlank.Width, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true},
 		base.KeyPad7, base.KeyPad8, base.KeyPad9, base.KeyPadPlus,
 	},
@@ -225,7 +234,7 @@ var size100ISO = [][]base.Key{
 		base.KeyA, base.KeyS, base.KeyD, base.KeyF, base.KeyG, base.KeyH, base.KeyJ, base.KeyK, base.KeyL, base.KeySemicolon, base.KeyApostrophe, base.KeyPound,
 		base.KeyEnterISOBlank,
 		{Label: base.KeyBlank.Label, Width: base.U2, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true, Rightless: true, Leftless: false},
-		{Label: base.KeyBlank.Label, Width: base.U1, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: false, Rightless: true, Leftless: true},
+		{Label: base.KeyBlank.Label, Width: base.U1, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: false, Rightless: true, Leftless: true, BottomLeftless: true},
 		{Label: base.KeyBlank.Label, Width: base.U2, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true, Rightless: false, Leftless: false},
 		base.KeyPad4, base.KeyPad5, base.KeyPad6,
 		{Label: base.KeyPadPlus.Label, Width: base.KeyPadPlus.Width, Finger: base.KeyPadPlus.Finger, EvCode: base.KeyPadPlus.EvCode},
@@ -237,7 +246,7 @@ var size100ISO = [][]base.Key{
 		{Label: base.KeyBlank.Label, Width: base.KeyBlank.Width, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true, Rightless: true, Leftless: false},
 		{Label: base.KeyBlank.Label, Width: base.U1, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode},
 		base.KeyUp,
-		{Label: base.KeyBlank.Label, Width: base.U1, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Rightless: true, Leftless: true},
+		{Label: base.KeyBlank.Label, Width: base.U1, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Rightless: true, Leftless: true, BottomLeftless: true},
 		{Label: base.KeyBlank.Label, Width: base.KeyBlank.Width, Finger: base.KeyBlank.Finger, EvCode: base.KeyBlank.EvCode, Gap: true},
 		base.KeyPad1, base.KeyPad2, base.KeyPad3, base.KeyPadEnter,
 	},

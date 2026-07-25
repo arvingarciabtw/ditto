@@ -255,11 +255,9 @@ func (m Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		if m.keycastMode {
 			m.keycastFingerColors = !m.keycastFingerColors
 		}
-	case "b":
-		if m.keycastMode {
-			m.keycastBoxDraw = !m.keycastBoxDraw
-			_ = config.SaveConfig(m.saveConfig())
-		}
+	case "v":
+		m.keycastBoxDraw = !m.keycastBoxDraw
+		_ = config.SaveConfig(m.saveConfig())
 	}
 
 	return m, nil

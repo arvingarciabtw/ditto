@@ -15,13 +15,16 @@ var (
 	StandardColor   color.Color
 	QuitColor       color.Color
 	QuitBorderColor color.Color
-	ModeColor color.Color
+	ModeColor       color.Color
 	OverlayBase     lipgloss.Style
+	OverlayBoxDraw  lipgloss.Style
 	StatusBarStyle  lipgloss.Style
 	FingerStyle     map[keyboard.Finger]lipgloss.Style
 	FingerActive    map[keyboard.Finger]lipgloss.Style
 	WarningStyle    lipgloss.Style
 	WarningAccent   lipgloss.Style
+	ASCIIStyle      lipgloss.Style
+	BoxDrawStyle    lipgloss.Style
 )
 
 var KeyboardBorder = lipgloss.Border{
@@ -77,6 +80,10 @@ func init() {
 		Border(KeyboardBorder).
 		Padding(1, 3)
 
+	OverlayBoxDraw = lipgloss.NewStyle().
+		Border(KeyboardBorderBoxDraw).
+		Padding(1, 3)
+
 	if isDark {
 		LayoutColor = lipgloss.BrightBlue
 		SizeColor = lipgloss.BrightMagenta
@@ -117,4 +124,12 @@ func init() {
 	}
 
 	WarningStyle = lipgloss.NewStyle()
+
+	if isDark {
+		ASCIIStyle = lipgloss.NewStyle().Foreground(lipgloss.White)
+		BoxDrawStyle = lipgloss.NewStyle().Foreground(lipgloss.BrightBlack)
+	} else {
+		ASCIIStyle = lipgloss.NewStyle().Faint(true)
+		BoxDrawStyle = lipgloss.NewStyle().Faint(true)
+	}
 }

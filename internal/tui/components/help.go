@@ -13,6 +13,7 @@ type Bindings struct {
 	Hangeul  bkey.Binding
 	Keycast  bkey.Binding
 	Finger   bkey.Binding
+	Visual  bkey.Binding
 }
 
 var Commands = Bindings{
@@ -47,5 +48,9 @@ var Commands = Bindings{
 	Finger: bkey.NewBinding(
 		bkey.WithKeys("f"),
 		bkey.WithHelp("f", "finger"),
+	),
+	Visual: bkey.NewBinding(
+		bkey.WithKeys("v"),
+		bkey.WithHelp("v", "visual"),
 	),
 }
