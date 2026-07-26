@@ -35,6 +35,19 @@ func TestModel_initHasLayout(t *testing.T) {
 	}
 }
 
+/*
+TestModel_initHasVisual verifies the persisted visual option becomes model
+state directly so every rendering mode uses the same selection.
+*/
+func TestModel_initHasVisual(t *testing.T) {
+	cfg := config.Default()
+	cfg.ActiveVisual = config.VisualBoxDraw
+	m := InitModel(cfg)
+	if m.activeVisual != config.VisualBoxDraw {
+		t.Errorf("activeVisual = %q, want %q", m.activeVisual, config.VisualBoxDraw)
+	}
+}
+
 func updateModel(t *testing.T, m Model, msg tea.Msg) Model {
 	t.Helper()
 	result, _ := m.Update(msg)
@@ -145,6 +158,30 @@ func TestModel_toggleInfo(t *testing.T) {
 	m = updateModel(t, m, tea.KeyPressMsg{Code: 'h'})
 	if m.showAllInfo {
 		t.Error("expected showAllInfo to be false after toggle")
+	}
+}
+
+/*
+TestModel_toggleVisual verifies the visual shortcut alternates named options
+and persists the active selection after each change.
+*/
+func TestModel_toggleVisual(t *testing.T) {
+	m := testModel(t)
+	m = updateModel(t, m, tea.KeyPressMsg{Code: 'v'})
+	if m.activeVisual != config.VisualBoxDraw {
+		t.Errorf("activeVisual = %q, want %q", m.activeVisual, config.VisualBoxDraw)
+	}
+	persisted, err := config.Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if persisted.ActiveVisual != config.VisualBoxDraw {
+		t.Errorf("persisted ActiveVisual = %q, want %q", persisted.ActiveVisual, config.VisualBoxDraw)
+	}
+
+	m = updateModel(t, m, tea.KeyPressMsg{Code: 'v'})
+	if m.activeVisual != config.VisualASCII {
+		t.Errorf("activeVisual = %q, want %q", m.activeVisual, config.VisualASCII)
 	}
 }
 

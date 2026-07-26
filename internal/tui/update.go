@@ -14,14 +14,26 @@ import (
 	"github.com/arvingarciabtw/ditto/internal/tui/components"
 )
 
+/*
+keycastFadeMsg asks the update loop to remove expired keycast entries after a
+key press without blocking event processing.
+*/
 type keycastFadeMsg struct {
 	version int
 }
 
+/*
+Init satisfies tea.Model; Ditto has no asynchronous command to start because
+keyboard capture is owned by the command entrypoint.
+*/
 func (m Model) Init() tea.Cmd {
 	return nil
 }
 
+/*
+Update routes terminal, keyboard, and timer messages into model transitions so
+Bubble Tea remains the single owner of mutable UI state.
+*/
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -59,7 +71,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "h":
 			if !m.locked {
 				m.showAllInfo = !m.showAllInfo
-				_ = config.SaveConfig(m.saveConfig())
+				_ = config.Save(m.saveConfig())
 			}
 			return m, nil
 		case "m":
@@ -150,6 +162,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+/*
+handleLayoutListUpdate applies navigation or a selected logical layout while
+keeping layout-specific standard changes and persistence together.
+*/
 func (m Model) handleLayoutListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	var action components.ListAction
 	m.layoutList, action = m.layoutList.Update(msg)
@@ -162,7 +178,7 @@ func (m Model) handleLayoutListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) 
 			m.activeStandard = "iso"
 		}
 		m.showLayoutList = false
-		_ = config.SaveConfig(m.saveConfig())
+		_ = config.Save(m.saveConfig())
 		return m, nil
 	case components.ListCancel:
 		m.showLayoutList = false
@@ -172,6 +188,10 @@ func (m Model) handleLayoutListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) 
 	return m, nil
 }
 
+/*
+handleSizeListUpdate applies navigation or a selected keyboard size and saves
+confirmed changes after closing the picker.
+*/
 func (m Model) handleSizeListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	var action components.ListAction
 	m.sizeList, action = m.sizeList.Update(msg)
@@ -184,7 +204,7 @@ func (m Model) handleSizeListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			m.activeSize = size
 		}
 		m.showSizeList = false
-		_ = config.SaveConfig(m.saveConfig())
+		_ = config.Save(m.saveConfig())
 		return m, nil
 	case components.ListCancel:
 		m.showSizeList = false
@@ -194,6 +214,10 @@ func (m Model) handleSizeListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+/*
+handleStandardListUpdate applies navigation or a physical standard, clearing
+overlays that are only meaningful for the previously selected standard.
+*/
 func (m Model) handleStandardListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	var action components.ListAction
 	m.standardList, action = m.standardList.Update(msg)
@@ -205,7 +229,7 @@ func (m Model) handleStandardListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd
 		m.showStandardList = false
 		m.kanaActive = false
 		m.hangeulActive = false
-		_ = config.SaveConfig(m.saveConfig())
+		_ = config.Save(m.saveConfig())
 		return m, nil
 	case components.ListCancel:
 		m.showStandardList = false
@@ -215,6 +239,10 @@ func (m Model) handleStandardListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd
 	return m, nil
 }
 
+/*
+handleQuitDialogUpdate translates dialog confirmation into tea.Quit while a
+cancellation returns control to the keyboard view.
+*/
 func (m Model) handleQuitDialogUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	var action components.DialogAction
 	m.quitDialog, action = m.quitDialog.Update(msg)
@@ -231,6 +259,10 @@ func (m Model) handleQuitDialogUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) 
 	return m, nil
 }
 
+/*
+handleModeListUpdate switches between full-keyboard and keycast modes and
+clears history that should not carry across mode changes.
+*/
 func (m Model) handleModeListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	var action components.ListAction
 	m.modeList, action = m.modeList.Update(msg)
@@ -248,6 +280,10 @@ func (m Model) handleModeListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+/*
+handleHelpListUpdate delegates help navigation and closes the overlay when the
+list reports cancellation.
+*/
 func (m Model) handleHelpListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	var action components.ListAction
 	m.helpList, action = m.helpList.Update(msg)
@@ -261,6 +297,10 @@ func (m Model) handleHelpListUpdate(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+/*
+handleGlobalKeys handles shortcuts that apply when no overlay owns keyboard
+input, including quitting and standard-specific display toggles.
+*/
 func (m Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 
@@ -283,13 +323,22 @@ func (m Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			m.keycastFingerColors = !m.keycastFingerColors
 		}
 	case "v":
-		m.keycastBoxDraw = !m.keycastBoxDraw
-		_ = config.SaveConfig(m.saveConfig())
+		switch m.activeVisual {
+		case config.VisualASCII:
+			m.activeVisual = config.VisualBoxDraw
+		case config.VisualBoxDraw:
+			m.activeVisual = config.VisualASCII
+		}
+		_ = config.Save(m.saveConfig())
 	}
 
 	return m, nil
 }
 
+/*
+isKeycastModifier identifies keys that affect another key's label but should
+not create standalone entries in keycast history.
+*/
 func isKeycastModifier(code uint16) bool {
 	switch code {
 	case basepkg.KEY_LEFTSHIFT, basepkg.KEY_RIGHTSHIFT,

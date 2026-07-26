@@ -1,5 +1,7 @@
-// Package tui implements the Bubble Tea model, update, view loop
-// along with the TUI styling and overlay components.
+/*
+Package tui implements the Bubble Tea model, update, view loop
+along with the TUI styling and overlay components.
+*/
 package tui
 
 import (
@@ -10,6 +12,10 @@ import (
 	"github.com/arvingarciabtw/ditto/internal/tui/components"
 )
 
+/*
+keycastEntry records a rendered key press and its display metadata so keycast
+mode can color, order, and expire entries independently of held-key state.
+*/
 type keycastEntry struct {
 	label     string
 	version   int
@@ -17,39 +23,52 @@ type keycastEntry struct {
 	pressedAt time.Time
 }
 
+/*
+Model contains all persisted choices, transient input state, and overlay state
+owned by the Bubble Tea update loop.
+*/
 type Model struct {
-	activeLayout     string
-	activeSize       int
-	activeStandard   string
-	locked           bool
-	layoutList       components.ListModel
-	sizeList         components.ListModel
-	standardList     components.ListModel
-	quitDialog       components.DialogModel
-	modeList         components.ListModel
-	helpList         components.ListModel
+	activeLayout   string
+	activeSize     int
+	activeStandard string
+	activeVisual   string
+	locked         bool
+
+	layoutList   components.ListModel
+	sizeList     components.ListModel
+	standardList components.ListModel
+	modeList     components.ListModel
+	helpList     components.ListModel
+	quitDialog   components.DialogModel
+
 	showLayoutList   bool
 	showSizeList     bool
 	showStandardList bool
-	showQuitDialog   bool
 	showModeList     bool
 	showHelpList     bool
+	showQuitDialog   bool
 	showAllInfo      bool
-	pressedKeys      map[uint16]bool
-	capsLock         bool
-	kanaKeyHeld      bool
-	kanaActive       bool
-	hangeulKeyHeld   bool
-	hangeulActive    bool
-	terminalWidth    int
-	terminalHeight   int
+
+	pressedKeys    map[uint16]bool
+	capsLock       bool
+	kanaKeyHeld    bool
+	kanaActive     bool
+	hangeulKeyHeld bool
+	hangeulActive  bool
+
+	terminalWidth  int
+	terminalHeight int
+
 	keycastMode         bool
 	keycastKeys         []keycastEntry
 	keycastFadeVer      int
 	keycastFingerColors bool
-	keycastBoxDraw      bool
 }
 
+/*
+InitModel constructs the initial TUI state from validated configuration and
+synchronizes each picker with its active value.
+*/
 func InitModel(cfg config.Config) Model {
 	layoutList := components.ListModel{
 		Items:        keyboard.LayoutListItems,
@@ -98,23 +117,12 @@ func InitModel(cfg config.Config) Model {
 		showAllInfo = *cfg.ShowAllInfo
 	}
 
-	keycastBoxDraw := false
-	if cfg.KeycastBoxDraw != nil {
-		keycastBoxDraw = *cfg.KeycastBoxDraw
-	}
-
 	helpItems := dedupBindings(components.Commands)
 
 	return Model{
-		layoutList: layoutList,
-		sizeList:   sizeList,
+		layoutList:   layoutList,
+		sizeList:     sizeList,
 		standardList: standardList,
-		quitDialog: components.DialogModel{
-			AccentColor: QuitColor,
-			Prompt:      "Are you sure you want to quit?",
-			LeftLabel:   "Quit",
-			RightLabel:  "Cancel",
-		},
 		modeList: components.ListModel{
 			Items:        []string{"Default", "Keycast"},
 			Selected:     0,
@@ -131,37 +139,59 @@ func InitModel(cfg config.Config) Model {
 			HideEnter:    true,
 			FooterLeft:   true,
 		},
-		activeLayout:     cfg.ActiveLayout,
-		activeSize:       cfg.ActiveSize,
-		activeStandard:   cfg.ActiveStandard,
-		locked:           cfg.Locked,
+		quitDialog: components.DialogModel{
+			AccentColor: QuitColor,
+			Prompt:      "Are you sure you want to quit?",
+			LeftLabel:   "Quit",
+			RightLabel:  "Cancel",
+		},
+
+		activeLayout:   cfg.ActiveLayout,
+		activeSize:     cfg.ActiveSize,
+		activeStandard: cfg.ActiveStandard,
+		activeVisual:   cfg.ActiveVisual,
+		locked:         cfg.Locked,
+
 		showLayoutList:   false,
 		showSizeList:     false,
 		showStandardList: false,
 		showAllInfo:      showAllInfo,
-		pressedKeys:      make(map[uint16]bool),
-		keycastBoxDraw:   keycastBoxDraw,
+
+		pressedKeys: make(map[uint16]bool),
 	}
 }
 
+/*
+saveConfig extracts only persistent user choices from the model so transient
+terminal, input, and overlay state never reaches the config file.
+*/
 func (m Model) saveConfig() config.Config {
 	v := m.showAllInfo
-	v2 := m.keycastBoxDraw
+
 	return config.Config{
 		ActiveLayout:   m.activeLayout,
 		ActiveSize:     m.activeSize,
 		ActiveStandard: m.activeStandard,
+		ActiveVisual:   m.activeVisual,
 		Locked:         m.locked,
 		ShowAllInfo:    &v,
-		KeycastBoxDraw: &v2,
 	}
 }
 
+/*
+dedupBindings builds ordered help rows while collapsing bindings that share a
+key, such as the standard-specific character overlay command.
+*/
 func dedupBindings(b components.Bindings) []string {
+	/*
+		binding pairs a displayed key with its description while preserving the
+		deliberate help ordering before duplicate keys are removed.
+	*/
 	type binding struct {
 		key  string
 		desc string
 	}
+
 	order := []binding{
 		{b.Size.Help().Key, b.Size.Help().Desc},
 		{b.Layout.Help().Key, b.Layout.Help().Desc},
@@ -174,6 +204,7 @@ func dedupBindings(b components.Bindings) []string {
 		{b.Quit.Help().Key, b.Quit.Help().Desc},
 		{b.KeyBindings.Help().Key, b.KeyBindings.Help().Desc},
 	}
+
 	seen := make(map[string]bool)
 	var items []string
 	for _, b := range order {
@@ -183,5 +214,6 @@ func dedupBindings(b components.Bindings) []string {
 		seen[b.key] = true
 		items = append(items, b.key+"  "+b.desc)
 	}
+
 	return items
 }

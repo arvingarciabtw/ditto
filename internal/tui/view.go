@@ -9,11 +9,20 @@ import (
 	lipgloss "charm.land/lipgloss/v2"
 	ansi "github.com/charmbracelet/x/ansi"
 
+	"github.com/arvingarciabtw/ditto/internal/config"
 	"github.com/arvingarciabtw/ditto/internal/keyboard"
 	"github.com/arvingarciabtw/ditto/internal/tui/components"
 )
 
+/*
+View renders the active display mode and any overlay into Bubble Tea's
+alternate-screen view, keeping presentation derived from model state.
+*/
 func (m Model) View() tea.View {
+	/*
+		defaultOverlayWidth gives all menus and dialogs a consistent width so
+		switching overlays does not cause unnecessary horizontal movement.
+	*/
 	const defaultOverlayWidth = 30
 
 	var s string
@@ -31,7 +40,7 @@ func (m Model) View() tea.View {
 		var h int
 
 		ob := OverlayBase
-		if m.keycastBoxDraw {
+		if m.activeVisual == config.VisualBoxDraw {
 			ob = OverlayBoxDraw
 		}
 
@@ -74,6 +83,10 @@ func (m Model) View() tea.View {
 	return v
 }
 
+/*
+base renders the full keyboard view with its optional information bars,
+returning a size warning instead when the configured keyboard cannot fit.
+*/
 func base(m Model) string {
 	tw, th := m.terminalWidth, m.terminalHeight
 	if tw == 0 || th == 0 {
@@ -81,10 +94,11 @@ func base(m Model) string {
 	}
 
 	style := ASCIIStyle
-	if m.keycastBoxDraw {
+	if m.activeVisual == config.VisualBoxDraw {
 		style = BoxDrawStyle
 	}
-	kb := keyboard.Render(m.activeLayout, m.activeSize, m.activeStandard, m.pressedKeys, FingerStyle, FingerActive, m.keycastBoxDraw, style)
+	boxDraw := m.activeVisual == config.VisualBoxDraw
+	kb := keyboard.Render(m.activeLayout, m.activeSize, m.activeStandard, m.pressedKeys, FingerStyle, FingerActive, boxDraw, style)
 	kh := strings.Count(kb, "\n") + 1
 	kw := 0
 	for line := range strings.SplitSeq(kb, "\n") {
@@ -113,6 +127,10 @@ func base(m Model) string {
 	return lipgloss.Place(tw, th, lipgloss.Center, lipgloss.Center, content)
 }
 
+/*
+warning centers the current and required dimensions so users can understand
+why the selected keyboard is not being rendered.
+*/
 func warning(tw, th, nw, nh int) string {
 	header := lipgloss.NewStyle().Foreground(QuitColor).Render("Terminal size too small:")
 	size := WarningStyle.Render(fmt.Sprintf("Width = %d  Height = %d", tw, th))
@@ -123,7 +141,15 @@ func warning(tw, th, nw, nh int) string {
 	return lipgloss.Place(tw, th, lipgloss.Center, lipgloss.Center, strings.Join(lines, "\n"))
 }
 
+/*
+topBar renders lock and standard state beside the finger-color legend, using
+the keyboard width to align both groups.
+*/
 func topBar(m Model, width int) string {
+	/*
+		legend pairs a finger name with its color so labels and markers are rendered
+		from the same style definition.
+	*/
 	type legend struct {
 		name  string
 		style lipgloss.Style
@@ -157,6 +183,10 @@ func topBar(m Model, width int) string {
 	return lipgloss.JoinHorizontal(lipgloss.Bottom, std, spacer, legends)
 }
 
+/*
+statusBar renders active size and layout information opposite the global key
+bindings so the footer matches the keyboard width.
+*/
 func statusBar(m Model, width int) string {
 	left := StatusBarStyle.Render(fmt.Sprintf("%d%%", m.activeSize))
 	left += StatusBarStyle.Render(" • ")
@@ -168,6 +198,10 @@ func statusBar(m Model, width int) string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, left, spacer, bindings)
 }
 
+/*
+renderBindings formats the global help bindings from their definitions to
+prevent footer labels from drifting away from configured keys.
+*/
 func renderBindings(c components.Bindings) string {
 	parts := []string{
 		StatusBarStyle.Render(c.HideKey.Help().Key) + " " + StatusBarStyle.Render(c.HideKey.Help().Desc),
@@ -178,6 +212,10 @@ func renderBindings(c components.Bindings) string {
 	return strings.Join(parts, StatusBarStyle.Render(" • "))
 }
 
+/*
+keycastView renders recent non-modifier presses as centered key boxes, fitting
+them to the terminal while optionally showing controls beneath them.
+*/
 func keycastView(m Model) string {
 	tw, th := m.terminalWidth, m.terminalHeight
 	if tw == 0 || th == 0 {
@@ -208,7 +246,8 @@ func keycastView(m Model) string {
 		}
 	}
 
-	row := keycastBoxRow(kept, m.keycastFingerColors, m.keycastBoxDraw)
+	boxDraw := m.activeVisual == config.VisualBoxDraw
+	row := keycastBoxRow(kept, m.keycastFingerColors, boxDraw)
 
 	showBar := m.showAllInfo
 	if !showBar {
@@ -234,6 +273,10 @@ func keycastView(m Model) string {
 	return keyArea + "\n" + cmdLine
 }
 
+/*
+fitLabelsToWidth drops the oldest labels until their key boxes fit, preserving
+the most recent keycast activity in narrow terminals.
+*/
 func fitLabelsToWidth(labels []string, maxWidth int) []string {
 	if len(labels) == 0 {
 		return nil
@@ -252,6 +295,10 @@ func fitLabelsToWidth(labels []string, maxWidth int) []string {
 	return labels
 }
 
+/*
+keycastBoxRow converts keycast entries into one aligned row of ASCII or
+box-drawing key outlines with optional finger coloring.
+*/
 func keycastBoxRow(entries []keycastEntry, useColors, boxDraw bool) string {
 	if len(entries) == 0 {
 		return ""
@@ -289,6 +336,10 @@ func keycastBoxRow(entries []keycastEntry, useColors, boxDraw bool) string {
 	return strings.Join(tops, " ") + "\n" + strings.Join(mids, " ") + "\n" + strings.Join(bots, " ")
 }
 
+/*
+overlay composites an overlay onto a background by terminal display columns,
+preserving ANSI styling and wide-character alignment around the replaced area.
+*/
 func overlay(bg string, ov string, x, y int) string {
 	bgLines := strings.Split(bg, "\n")
 	overlayLines := strings.Split(ov, "\n")

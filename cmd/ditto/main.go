@@ -1,3 +1,7 @@
+/*
+Package main assembles configuration, keyboard input, and the terminal UI
+into the Ditto executable.
+*/
 package main
 
 import (
@@ -6,22 +10,26 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/arvingarciabtw/ditto/internal/config"
 	"github.com/arvingarciabtw/ditto/internal/input"
 	"github.com/arvingarciabtw/ditto/internal/tui"
 )
 
+/*
+main wires together configuration, input capture, and the TUI so the program's
+startup sequence remains visible in one place.
+*/
 func main() {
-	cfg := config.LoadWithFlags()
-
-	p := tea.NewProgram(tui.InitModel(cfg))
-	if err := input.StartInput(p); err != nil {
-		input.PrintStartError(err)
-		os.Exit(1)
-	}
-	_, err := p.Run()
+	cfg, err := loadConfig(os.Args[1:])
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		exit(err)
+	}
+
+	program := tea.NewProgram(tui.InitModel(cfg))
+	if err := input.StartInput(program); err != nil {
+		exitInput(err)
+	}
+
+	if _, err := program.Run(); err != nil {
+		exit(fmt.Errorf("run program: %w", err))
 	}
 }
