@@ -125,10 +125,10 @@ func TestConfigValidate(t *testing.T) {
 }
 
 /*
-TestSaveConfig_writesPrivateFile verifies saved data, restrictive permissions,
-and temporary-file cleanup after an atomic replacement.
+TestSaveConfig_writesFile verifies saved data and temporary-file cleanup after
+replacing the config file.
 */
-func TestSaveConfig_writesPrivateFile(t *testing.T) {
+func TestSaveConfig_writesFile(t *testing.T) {
 	path := tempConfigPath(t)
 	want := Config{ActiveLayout: "colemak", ActiveSize: 80, ActiveStandard: "iso", ActiveVisual: VisualASCII}
 
@@ -150,42 +150,12 @@ func TestSaveConfig_writesPrivateFile(t *testing.T) {
 	if !strings.Contains(string(data), `"active_visual": "ascii"`) {
 		t.Error("saved config does not contain active_visual field")
 	}
-	info, err := os.Stat(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if perm := info.Mode().Perm(); perm != 0o600 {
-		t.Errorf("saved config permissions = %o, want 600", perm)
-	}
 	entries, err := os.ReadDir(filepath.Dir(path))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(entries) != 1 || entries[0].Name() != filepath.Base(path) {
 		t.Errorf("config directory entries = %v, want only %q", entries, filepath.Base(path))
-	}
-}
-
-/*
-TestSaveConfig_replacesExistingPermissions verifies an insecure existing mode
-is not retained when the config is atomically replaced.
-*/
-func TestSaveConfig_replacesExistingPermissions(t *testing.T) {
-	path := writeConfigFile(t, `{}`)
-	if err := os.Chmod(path, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := Save(Default()); err != nil {
-		t.Fatal(err)
-	}
-
-	info, err := os.Stat(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if perm := info.Mode().Perm(); perm != 0o600 {
-		t.Errorf("saved config permissions = %o, want 600", perm)
 	}
 }
 

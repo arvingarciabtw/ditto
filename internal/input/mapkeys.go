@@ -1,117 +1,57 @@
-//go:build !linux && !darwin
-
 package input
 
 import "github.com/arvingarciabtw/ditto/internal/keyboard/base"
 
-func init() {
-	keyMapper = mapGohookToEvdev
-}
-
-// gohook Windows virtual keycodes used by robotn/gohook.
-// Most letter/number keys pass through 1:1 with evdev codes.
-// These are the ones that need explicit remapping.
-const (
-	hookF11         = 69
-	hookF12         = 70
-	hookNumpadSlash = 3637
-	hookNumpadEnter = 3612
-	hookRAlt        = 3640
-	hookRCtrl       = 3641
-	hookPause       = 3673
-	hookScrollLock  = 3674
-	hookCmd         = 3675
-	hookRCmd        = 3676
-	hookMenu        = 3677
-	hookHome        = 3679
-	hookUp          = 57416
-	hookDown        = 57424
-	hookLeft        = 57419
-	hookRight       = 57421
-	hookPageUp      = 57425
-	hookPageDown    = 57426
-	hookInsert      = 57427
-	hookDelete      = 57423
-	hookHome2       = 57435
-	hookEnd         = 57436
-	hookF11_2       = 57431
-	hookF12_2       = 57433
-	hookKPDot       = 57434
-	hookKPComma     = 57372
-	hookPause2      = 57428
-	hookScrollLock2 = 57429
-	hookCapsLock    = 57399
-	hookKPDot2      = 57401
-)
-
-// Internal evdev-like keycodes not yet defined in the base package.
-const (
-	evPause = 119
-)
-
-func mapGohookToEvdev(code uint16) uint16 {
+/*
+mapKey translates normalized IOHook virtual keycodes into evdev codes used by
+the keyboard model. It rejects values whose equivalent is unknown rather than
+guessing platform-specific meanings.
+*/
+func mapKey(code uint16) (uint16, bool) {
 	switch code {
-	case hookF11:
-		return base.KEY_F11
-	case hookF12:
-		return base.KEY_F12
-	case hookNumpadSlash:
-		return base.KEY_KPSLASH
-	case hookNumpadEnter:
-		return base.KEY_KPENTER
-	case hookRAlt:
-		return base.KEY_RIGHTALT
-	case hookRCtrl:
-		return base.KEY_RIGHTCTRL
-	case hookPause:
-		return evPause
-	case hookScrollLock:
-		return base.KEY_SCROLLLOCK
-	case hookCmd:
-		return base.KEY_LEFTMETA
-	case hookRCmd:
-		return base.KEY_RIGHTMETA
-	case hookMenu:
-		return base.KEY_HANJA
-	case hookHome:
-		return base.KEY_HOME
-	case hookUp:
-		return base.KEY_UP
-	case hookDown:
-		return base.KEY_DOWN
-	case hookLeft:
-		return base.KEY_LEFT
-	case hookRight:
-		return base.KEY_RIGHT
-	case hookPageUp:
-		return base.KEY_PAGEUP
-	case hookPageDown:
-		return base.KEY_PAGEDOWN
-	case hookInsert:
-		return base.KEY_INSERT
-	case hookDelete:
-		return base.KEY_DELETE
-	case hookHome2:
-		return base.KEY_HOME
-	case hookEnd:
-		return base.KEY_END
-	case hookF11_2:
-		return base.KEY_F11
-	case hookF12_2:
-		return base.KEY_F12
-	case hookKPDot:
-		return base.KEY_KPDOT
-	case hookKPComma:
-		return base.KEY_YEN
-	case hookPause2:
-		return evPause
-	case hookScrollLock2:
-		return base.KEY_SCROLLLOCK
-	case hookCapsLock:
-		return base.KEY_CAPSLOCK
-	case hookKPDot2:
-		return base.KEY_SYSRQ
-	default:
-		return code
+	case 0: // VC_UNDEFINED
+		return 0, false
+	case 0x0E1C: // VC_KP_ENTER
+		return base.KEY_KPENTER, true
+	case 0x0E1D: // VC_CONTROL_R
+		return base.KEY_RIGHTCTRL, true
+	case 0x0E35: // VC_KP_DIVIDE
+		return base.KEY_KPSLASH, true
+	case 0x0E37: // VC_PRINTSCREEN
+		return base.KEY_SYSRQ, true
+	case 0x0E38: // VC_ALT_R
+		return base.KEY_RIGHTALT, true
+	case 0x0E47, 0xEE47: // VC_HOME, Windows extended VC_HOME
+		return base.KEY_HOME, true
+	case 0x0E49, 0xEE49: // VC_PAGE_UP, Windows extended VC_PAGE_UP
+		return base.KEY_PAGEUP, true
+	case 0x0E4F, 0xEE4F: // VC_END, Windows extended VC_END
+		return base.KEY_END, true
+	case 0x0E51, 0xEE51: // VC_PAGE_DOWN, Windows extended VC_PAGE_DOWN
+		return base.KEY_PAGEDOWN, true
+	case 0x0E52, 0xEE52: // VC_INSERT, Windows extended VC_INSERT
+		return base.KEY_INSERT, true
+	case 0x0E53, 0xEE53: // VC_DELETE, Windows extended VC_DELETE
+		return base.KEY_DELETE, true
+	case 0x0E5B: // VC_META_L
+		return base.KEY_LEFTMETA, true
+	case 0x0E5C: // VC_META_R
+		return base.KEY_RIGHTMETA, true
+	case 0xE048, 0xEE48: // VC_UP, Windows extended VC_UP
+		return base.KEY_UP, true
+	case 0xE04B, 0xEE4B: // VC_LEFT, Windows extended VC_LEFT
+		return base.KEY_LEFT, true
+	case 0xE04D, 0xEE4D: // VC_RIGHT, Windows extended VC_RIGHT
+		return base.KEY_RIGHT, true
+	case 0xE050, 0xEE50: // VC_DOWN, Windows extended VC_DOWN
+		return base.KEY_DOWN, true
 	}
+
+	if code >= base.KEY_ESC && code <= base.KEY_KPDOT {
+		return code, true
+	}
+	if code == base.KEY_F11 || code == base.KEY_F12 {
+		return code, true
+	}
+	return 0, false
 }
