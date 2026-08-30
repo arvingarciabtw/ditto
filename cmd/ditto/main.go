@@ -25,7 +25,9 @@ func main() {
 	}
 
 	program := tea.NewProgram(tui.InitModel(cfg))
-	if err := input.StartInput(program); err != nil {
+	if err := input.StartInput(func(event input.KeyEvent) {
+		program.Send(event)
+	}); err != nil {
 		exitInput(err)
 	}
 

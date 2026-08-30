@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"strings"
 
-	tea "charm.land/bubbletea/v2"
 	lipgloss "charm.land/lipgloss/v2"
 	evdev "github.com/gvalkov/golang-evdev"
 )
@@ -52,7 +51,8 @@ func isKeyboardDevice(eventNum int) bool {
 	return checkUdevadm(eventNum)
 }
 
-func ListenToKeyboard(p *tea.Program, dev *evdev.InputDevice) {
+// ListenToKeyboard converts Linux evdev key events and sends supported states.
+func ListenToKeyboard(send func(KeyEvent), dev *evdev.InputDevice) {
 	defer dev.File.Close()
 
 	for {
@@ -61,14 +61,34 @@ func ListenToKeyboard(p *tea.Program, dev *evdev.InputDevice) {
 			return
 		}
 		for _, ev := range events {
-			if ev.Type == evdev.EV_KEY {
-				p.Send(KeyMsg{
-					Code: uint16(ev.Code),
-					Down: ev.Value != 0,
-				})
+			event, ok := keyEventFromEvdev(ev)
+			if !ok {
+				continue
 			}
+			send(event)
 		}
 	}
+}
+
+// keyEventFromEvdev maps the three defined evdev key values to input states.
+func keyEventFromEvdev(ev evdev.InputEvent) (KeyEvent, bool) {
+	if ev.Type != evdev.EV_KEY {
+		return KeyEvent{}, false
+	}
+
+	var state KeyState
+	switch ev.Value {
+	case 0:
+		state = KeyStateReleased
+	case 1:
+		state = KeyStatePressed
+	case 2:
+		state = KeyStateRepeated
+	default:
+		return KeyEvent{}, false
+	}
+
+	return KeyEvent{Code: ev.Code, State: state}, true
 }
 
 func readUeventFile(path string) (string, error) {

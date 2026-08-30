@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-
-	tea "charm.land/bubbletea/v2"
 )
 
 // StartInput reports that Ditto has no input backend for the current platform.
-func StartInput(_ *tea.Program) error {
+func StartInput(_ func(KeyEvent)) error {
 	return fmt.Errorf("keyboard input is unsupported on %s", runtime.GOOS)
 }
 

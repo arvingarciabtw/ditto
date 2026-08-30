@@ -71,7 +71,7 @@ func TestModel_windowSize(t *testing.T) {
 
 func TestModel_keyPressDown(t *testing.T) {
 	m := testModel(t)
-	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStatePressed})
 	if !m.pressedKeys[basepkg.KEY_A] {
 		t.Error("expected key 30 to be pressed")
 	}
@@ -80,9 +80,57 @@ func TestModel_keyPressDown(t *testing.T) {
 func TestModel_keyPressUp(t *testing.T) {
 	m := testModel(t)
 	m.pressedKeys[basepkg.KEY_A] = true
-	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: false})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStateReleased})
 	if m.pressedKeys[basepkg.KEY_A] {
 		t.Error("expected key 30 to be released")
+	}
+}
+
+// TestModel_keyRepeatHeld verifies autorepeat keeps a physical key pressed.
+func TestModel_keyRepeatHeld(t *testing.T) {
+	m := testModel(t)
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStateRepeated})
+	if !m.pressedKeys[basepkg.KEY_A] {
+		t.Error("expected repeated key to remain pressed")
+	}
+}
+
+// TestModel_unknownKeyState verifies malformed input events do not alter state.
+func TestModel_unknownKeyState(t *testing.T) {
+	m := testModel(t)
+	m.keycastMode = true
+	m.pressedKeys[basepkg.KEY_A] = true
+	m.capsLock = true
+
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStateUnknown})
+	if !m.pressedKeys[basepkg.KEY_A] {
+		t.Error("expected unknown event to preserve held state")
+	}
+	if !m.capsLock {
+		t.Error("expected unknown event to preserve Caps Lock state")
+	}
+	if len(m.keycastKeys) != 0 {
+		t.Errorf("expected unknown event not to enter keycast history, got %v", m.keycastKeys)
+	}
+}
+
+// TestModel_capsLockIgnoresRepeat verifies only a real press toggles lock state.
+func TestModel_capsLockIgnoresRepeat(t *testing.T) {
+	m := testModel(t)
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_CAPSLOCK, State: input.KeyStatePressed})
+	if !m.capsLock {
+		t.Fatal("expected Caps Lock press to enable lock state")
+	}
+
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_CAPSLOCK, State: input.KeyStateRepeated})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_CAPSLOCK, State: input.KeyStateReleased})
+	if !m.capsLock {
+		t.Fatal("expected Caps Lock repeat and release to preserve lock state")
+	}
+
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_CAPSLOCK, State: input.KeyStatePressed})
+	if m.capsLock {
+		t.Error("expected second Caps Lock press to disable lock state")
 	}
 }
 
@@ -278,7 +326,7 @@ func TestModel_toggleKeycastMode(t *testing.T) {
 func TestModel_keycastKeyDown(t *testing.T) {
 	m := testModel(t)
 	m.keycastMode = true
-	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStatePressed})
 	if len(m.keycastKeys) != 1 || m.keycastKeys[0].label != "a" {
 		t.Errorf("expected keycastKeys [a], got %v", m.keycastKeys)
 	}
@@ -287,8 +335,8 @@ func TestModel_keycastKeyDown(t *testing.T) {
 func TestModel_keycastKeyDownUp(t *testing.T) {
 	m := testModel(t)
 	m.keycastMode = true
-	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
-	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: false})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStatePressed})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStateReleased})
 	if len(m.keycastKeys) != 1 {
 		t.Errorf("expected keycastKeys to have 1 key after key-up, got %v", m.keycastKeys)
 	}
@@ -297,7 +345,7 @@ func TestModel_keycastKeyDownUp(t *testing.T) {
 func TestModel_keycastFade(t *testing.T) {
 	m := testModel(t)
 	m.keycastMode = true
-	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStatePressed})
 	m.keycastKeys[0].pressedAt = time.Now().Add(-2 * time.Second)
 	m = updateModel(t, m, keycastFadeMsg{version: 99})
 	if len(m.keycastKeys) != 0 {
@@ -305,16 +353,17 @@ func TestModel_keycastFade(t *testing.T) {
 	}
 }
 
-func TestModel_keycastDuplicatePresses(t *testing.T) {
+// TestModel_keycastRepeat documents that autorepeat remains visible in history.
+func TestModel_keycastRepeat(t *testing.T) {
 	m := testModel(t)
 	m.keycastMode = true
-	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStatePressed})
 	v1 := m.keycastKeys[0].version
 	m.keycastKeys[0].pressedAt = time.Now().Add(-2 * time.Second)
-	m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_A, Down: true})
+	m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_A, State: input.KeyStateRepeated})
 	v2 := m.keycastKeys[1].version
 	if len(m.keycastKeys) != 2 {
-		t.Fatalf("expected 2 entries after two presses, got %v", m.keycastKeys)
+		t.Fatalf("expected 2 entries after press and repeat, got %v", m.keycastKeys)
 	}
 	if v1 == v2 {
 		t.Error("expected different versions for each press")
@@ -334,7 +383,7 @@ func TestModel_keycastMaxFive(t *testing.T) {
 	m := testModel(t)
 	m.keycastMode = true
 	for i := 0; i < 6; i++ {
-		m = updateModel(t, m, input.KeyMsg{Code: basepkg.KEY_1 + uint16(i), Down: true})
+		m = updateModel(t, m, input.KeyEvent{Code: basepkg.KEY_1 + uint16(i), State: input.KeyStatePressed})
 	}
 	if len(m.keycastKeys) != 5 {
 		t.Errorf("expected 5 keys, got %d: %v", len(m.keycastKeys), m.keycastKeys)

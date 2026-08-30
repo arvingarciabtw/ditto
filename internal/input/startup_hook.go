@@ -5,13 +5,11 @@ package input
 import (
 	"fmt"
 	"os"
-
-	tea "charm.land/bubbletea/v2"
 )
 
 // StartInput starts system-wide hook capture without blocking the TUI startup.
-func StartInput(p *tea.Program) error {
-	go ListenHook(p)
+func StartInput(send func(KeyEvent)) error {
+	go ListenHook(send)
 	return nil
 }
 

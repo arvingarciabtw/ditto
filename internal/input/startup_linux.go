@@ -2,17 +2,14 @@
 
 package input
 
-import (
-	tea "charm.land/bubbletea/v2"
-)
-
-func StartInput(p *tea.Program) error {
+// StartInput opens Linux keyboards and starts one event listener per device.
+func StartInput(send func(KeyEvent)) error {
 	devs, err := Devices()
 	if err != nil {
 		return err
 	}
 	for _, dev := range devs {
-		go ListenToKeyboard(p, dev)
+		go ListenToKeyboard(send, dev)
 	}
 	return nil
 }

@@ -3,29 +3,34 @@
 package input
 
 import (
-	tea "charm.land/bubbletea/v2"
+	"runtime"
+
 	hook "github.com/robotn/gohook"
 )
 
 /*
-ListenHook forwards supported IOHook keyboard events to Bubble Tea while
-discarding values that have no confirmed evdev equivalent.
+ListenHook forwards supported IOHook keyboard events while discarding values
+that have no confirmed evdev equivalent.
 */
-func ListenHook(p *tea.Program) {
+func ListenHook(send func(KeyEvent)) {
 	evChan := hook.Start()
 	defer hook.End()
+	held := make(keyStateTracker)
 
 	for ev := range evChan {
-		switch ev.Kind {
-		case hook.KeyDown, hook.KeyUp:
-			code, ok := mapKey(ev.Keycode)
-			if !ok {
-				continue
-			}
-			p.Send(KeyMsg{
-				Code: code,
-				Down: ev.Kind == hook.KeyDown,
-			})
+		if ev.Kind != hook.KeyDown && ev.Kind != hook.KeyUp {
+			// KeyHold is IOHook's typed-character event, not physical autorepeat.
+			continue
+		}
+
+		code, ok := mapKey(ev.Keycode)
+		if !ok {
+			continue
+		}
+
+		events := hookKeyEvents(held, code, ev.Kind == hook.KeyDown, runtime.GOOS == "darwin")
+		for _, event := range events {
+			send(event)
 		}
 	}
 }

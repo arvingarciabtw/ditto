@@ -113,9 +113,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			return m.handleGlobalKeys(msg)
 		}
-	case input.KeyMsg:
-		m.pressedKeys[msg.Code] = msg.Down
-		if m.keycastMode && msg.Down && !isKeycastModifier(msg.Code) {
+	case input.KeyEvent:
+		var down bool
+		switch msg.State {
+		case input.KeyStateReleased:
+			down = false
+		case input.KeyStatePressed, input.KeyStateRepeated:
+			down = true
+		default:
+			return m, nil
+		}
+
+		m.pressedKeys[msg.Code] = down
+		if m.keycastMode && down && !isKeycastModifier(msg.Code) {
 			if label, ok := keyboard.ResolveKeycastLabel(msg.Code, m.activeLayout, m.activeStandard, m.pressedKeys, m.capsLock); ok {
 				m.keycastFadeVer++
 				fng := basepkg.EvCodeFinger[msg.Code]
@@ -131,14 +141,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-		if msg.Code == basepkg.KEY_CAPSLOCK && msg.Down {
+		if msg.Code == basepkg.KEY_CAPSLOCK && msg.State == input.KeyStatePressed {
 			m.capsLock = !m.capsLock
 		}
 		if msg.Code == basepkg.KEY_KATAKANAHIRAGANA {
-			m.kanaKeyHeld = msg.Down
+			m.kanaKeyHeld = down
 		}
 		if msg.Code == basepkg.KEY_HANGEUL {
-			m.hangeulKeyHeld = msg.Down
+			m.hangeulKeyHeld = down
 		}
 	case keycastFadeMsg:
 		now := time.Now()
