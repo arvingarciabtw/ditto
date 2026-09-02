@@ -1,0 +1,27 @@
+<script>
+	import Next from "$lib/components/next.svelte";
+</script>
+
+# permissions
+
+for windows and macOS users, no need to set any permissions.
+
+## linux
+
+on linux, ditto reads raw keyboard events from `/dev/input/event*` through `evdev`. these files are not readable by regular users by default.
+
+grant the binary read access with:
+
+```sh
+sudo setcap cap_dac_read_search=ep "$(which ditto)"
+```
+
+ditto still runs as your user, not as root. you will need to run this command again after rebuilding or reinstalling the binary.
+
+to revoke the capability:
+
+```sh
+sudo setcap -r "$(which ditto)"
+```
+
+<Next url="/config" label="config" />

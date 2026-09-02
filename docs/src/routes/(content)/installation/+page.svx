@@ -1,14 +1,10 @@
+<script>
+	import Next from "$lib/components/next.svelte";
+</script>
+
 # installation 
 
 ditto has cross-platform support. installation depends on your os:
-
-## windows 
-
-install via the binaries in [releases](https://github.com/arvingarciabtw/ditto/releases).
-
-## macOS 
-
-install via the binaries in [releases](https://github.com/arvingarciabtw/ditto/releases).
 
 ## linux 
 
@@ -43,7 +39,15 @@ or install via the aur:
 paru -S ditto
 ```
 
-[permissions >>](/permissions)
+## macOS 
 
-<style>
-</style>
+install via the binaries in [releases](https://github.com/arvingarciabtw/ditto/releases).
+
+take note that you have to rename your binary to something else, since `ditto` is a native command in macOS.
+
+## windows 
+
+install via the binaries in [releases](https://github.com/arvingarciabtw/ditto/releases).
+
+
+<Next url="/permissions" label="permissions" />

@@ -170,7 +170,7 @@ body {
 	color: var(--text);
 	min-height: 100dvh;
 	width: 100%;
-	max-width: 100rem;
+	max-width: 90rem;
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-template-rows: max-content 1fr max-content;

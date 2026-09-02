@@ -1,0 +1,26 @@
+<script>
+    import Next from "$lib/components/next.svelte"
+</script>
+
+# lock
+
+if you're satisfied with how it looks and want to permanently keep it as-is, you have the option to lock it. to lock:
+
+```sh
+ditto --lock
+```
+
+while locked, the layout, size, and standard lists are unavailable. toggling the info bar with `h` and the kana or hangeul overlay with `c` is also disabled. mode selection, visual style, help, and quit controls remain available.
+
+unlock ditto with:
+
+```sh
+ditto --unlock
+```
+
+you can also edit `config.json` in the [config](/config) dir and set `"locked"` to `false`.
+
+<Next 
+    url="/custom-layouts"
+    label="custom layouts"
+/>

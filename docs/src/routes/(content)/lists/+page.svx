@@ -1,0 +1,60 @@
+<script>
+	import Next from "$lib/components/next.svelte";
+</script>
+
+# lists
+
+there are lists that let you change the keyboard size, layout, and physical standard.
+
+## size list
+
+<!-- NOTE: add gif here -->
+
+press `s` to open the size list. this determines which physical key matrix ditto renders.
+
+| size | form factor |
+| --- | --- |
+| `60%` | compact, no f-row or arrows |
+| `65%` | 60% with arrow keys and a navigation cluster |
+| `75%` | f-row in a compact layout |
+| `80%` | tenkeyless, with an f-row and arrows but no numpad |
+| `96%` | compact full-size layout with a numpad |
+| `100%` | full-size layout |
+
+## layout list
+
+<!-- NOTE: add gif here -->
+
+press `l` to open the layout list. this determines how physical keys are remapped.
+
+| layout | description |
+| --- | --- |
+| `qwerty` | standard us layout |
+| `qwerty uk` | standard uk layout |
+| `qwertz` | german qwertz layout |
+| `dvorak` | dvorak simplified layout |
+| `dvorak uk` | dvorak uk layout |
+| `colemak` | colemak layout |
+| `colemak-dh` | colemak with the angle mod |
+| `workman` | workman layout |
+| `azerty` | french azerty layout |
+
+[custom layouts](/custom-layouts) also appear in this list after ditto loads them at startup.
+
+## standard list
+
+<!-- NOTE: add gif here -->
+
+press `d` to open the standard list. this determines the physical keyboard standard.
+
+| standard | description |
+| --- | --- |
+| `ansi` | american national standards institute |
+| `iso` | international organization for standardization |
+| `abnt` | brazilian technical standards association |
+| `jis` | japanese industrial standard |
+| `ks` | korean standard |
+
+press `c` to toggle the kana overlay for jis or the hangeul overlay for ks.
+
+<Next url="/lock" label="lock" />

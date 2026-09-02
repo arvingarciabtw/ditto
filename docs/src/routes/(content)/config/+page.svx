@@ -1,0 +1,23 @@
+<script>
+	import Next from "$lib/components/next.svelte";
+</script>
+
+# config
+
+ditto stores `config.json` and custom layouts in a per-os config directory.
+
+settings selected in ditto are saved to `config.json`. custom layout files belong in the `layouts/` dir inside the config dir.
+
+## linux
+
+the default directory is `~/.config/ditto/`. if `$XDG_CONFIG_HOME` is set, ditto uses `$XDG_CONFIG_HOME/ditto/` instead.
+
+## macOS
+
+the config directory is `~/Library/Application Support/ditto/`.
+
+## windows
+
+the config directory is `%AppData%\ditto\`.
+
+<Next url="/modes" label="modes" />

@@ -1,0 +1,26 @@
+# custom layouts
+
+custom layouts are loaded from the `layouts/` dir inside the [config](/config). each `.json` file becomes a named layout using its filename without the extension.
+
+## format
+
+the file must contain a `map` object. a `shift` object is optional and falls back to qwerty's shift mappings when omitted.
+
+```json
+{
+  "map": {
+    "A": "A",
+    "S": "O",
+    "D": "E",
+    "F": "U",
+    // ...
+  },
+  "shift": {
+    "1": "!",
+    "2": "@"
+    // ...
+  }
+}
+```
+
+keys in `map` are physical key labels and values are the labels ditto displays. keys that are not included keep their original labels.
