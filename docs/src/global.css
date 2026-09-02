@@ -1,0 +1,202 @@
+/* css reset by josh comeau.
+   https://www.joshwcomeau.com/css/custom-css-reset/ */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+*:not(dialog) {
+	margin: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		interpolate-size: allow-keywords;
+	}
+}
+body {
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
+}
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
+}
+p {
+	text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	text-wrap: balance;
+}
+#root,
+#__next {
+	isolation: isolate;
+}
+
+/* variables to be used globally, such as
+   colors, spacings, etc. */
+/* prettier-ignore */
+html {
+	--rosewater: oklch(0.923 0.024 30.492); /* #F5E0DC */
+	--flamingo: oklch(0.88 0.042 17.975); /* #F2CDCD */
+	--pink: oklch(0.87 0.075 336.304); /* #F5C2E7 */
+	--mauve: oklch(0.787 0.119 304.769); /* #CBA6F7 */
+	--red: oklch(0.756 0.13 2.764); /* #F38BA8 */
+	--maroon: oklch(0.782 0.09 8.848); /* #EBA0AC */
+	--peach: oklch(0.824 0.101 52.629); /* #FAB387 */
+	--yellow: oklch(0.919 0.07 86.528); /* #F9E2AF */
+	--green: oklch(0.858 0.109 142.715); /* #A6E3A1 */
+	--teal: oklch(0.858 0.079 182.75); /* #94E2D5 */
+	--sky: oklch(0.847 0.083 210.255); /* #89DCEB */
+	--sapphire: oklch(0.791 0.096 228.653); /* #74C7EC */
+	--blue: oklch(0.766 0.111 259.885); /* #89B4FA */
+	--lavender: oklch(0.817 0.091 277.309); /* #B4BEFE */
+	--text: oklch(0.879 0.043 272.277); /* #CDD6F4 */
+	--subtext1: oklch(0.817 0.04 272.862); /* #BAC2DE */
+	--subtext0: oklch(0.751 0.04 273.932); /* #A6ADC8 */
+	--overlay2: oklch(0.687 0.037 274.725); /* #9399B2 */
+	--overlay1: oklch(0.618 0.037 276.005); /* #7F849C */
+	--overlay0: oklch(0.55 0.034 277.095); /* #6C7086 */
+	--surface2: oklch(0.477 0.034 278.643); /* #585B70 */
+	--surface1: oklch(0.404 0.032 280.152); /* #45475A */
+	--surface0: oklch(0.324 0.032 281.978); /* #313244 */
+	--base: oklch(0.243 0.03 283.911); /* #1E1E2E */
+	--mantle: oklch(0.216 0.025 284.065); /* #181825 */
+	--crust: oklch(0.183 0.02 284.204); /* #11111B */
+
+	--home: var(--red);
+	--experience: var(--green);
+	--project: var(--mauve);
+}
+
+/* fonts. */
+@font-face {
+	font-family: "commit-mono";
+	font-display: swap;
+	src: url("/commit-mono-regular-subset.woff2") format("woff2");
+}
+
+/* animations. */
+@keyframes flicker {
+	0%,
+	20%,
+	100% {
+		background-color: var(--flicker-color);
+	}
+	10% {
+		background-color: transparent;
+	}
+}
+@keyframes shake-up {
+	0% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-2px);
+	}
+	100% {
+		transform: translateY(0);
+	}
+}
+@keyframes shake-down {
+	0% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(2px);
+	}
+	100% {
+		transform: translateY(0);
+	}
+}
+@keyframes shake-left {
+	0% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(-2px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+@keyframes shake-right {
+	0% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(2px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+/* general. */
+html {
+	font-family: "commit-mono", monospace;
+	font-size: 0.875rem;
+	display: grid;
+	place-items: center;
+}
+
+body {
+	padding: 1.5rem;
+	background: var(--crust);
+	color: var(--text);
+	min-height: 100dvh;
+	width: 100%;
+	max-width: 100rem;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: max-content 1fr max-content;
+	gap: 2rem;
+	align-self: center;
+}
+
+/* preferences. */
+*::selection {
+	background: var(--mauve);
+	color: var(--crust);
+}
+p {
+	line-height: 1.75;
+}
+p.subtext {
+	color: var(--subtext0);
+}
+a {
+	color: var(--rosewater);
+}
+a:hover {
+	text-decoration: underline dotted;
+}
+
+@media (max-width: 500px) {
+	html {
+		font-size: 0.75rem;
+	}
+}
