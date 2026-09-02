@@ -1,0 +1,49 @@
+# installation 
+
+ditto has cross-platform support. installation depends on your os:
+
+## windows 
+
+install via the binaries in [releases](https://github.com/arvingarciabtw/ditto/releases).
+
+## macOS 
+
+install via the binaries in [releases](https://github.com/arvingarciabtw/ditto/releases).
+
+## linux 
+
+install via the binaries in [releases](https://github.com/arvingarciabtw/ditto/releases).
+
+or install with go:
+
+```sh
+go install github.com/arvingarciabtw/ditto/cmd/ditto@latest
+```
+
+or via the flake for nix users:
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    ditto = {
+      url = "github:arvingarciabtw/ditto";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  # ...
+}
+```
+
+or install via the aur:
+
+```sh
+paru -S ditto
+```
+
+[permissions >>](/permissions)
+
+<style>
+</style>

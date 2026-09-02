@@ -1,7 +1,0 @@
-<main>
-some markdown i suppose
-
-`ooh some code`
-
-</main>
-

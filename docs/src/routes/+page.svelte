@@ -34,7 +34,7 @@
 	<section class="docs">
 		<p class="subtext">
 			see the
-			<a href="/getting-started">docs</a>
+			<a href="/installation">docs</a>
 			to get started.
 		</p>
 	</section>

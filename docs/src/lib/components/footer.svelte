@@ -20,6 +20,7 @@
 
 <style>
 	footer {
+		padding-top: 2rem;
 		display: grid;
 		grid-template-columns: repeat(3, max-content);
 		gap: 2rem;

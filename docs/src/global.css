@@ -161,6 +161,7 @@ html {
 	font-size: 0.875rem;
 	display: grid;
 	place-items: center;
+	scrollbar-color: var(--surface0) var(--crust);
 }
 
 body {
@@ -193,6 +194,10 @@ a {
 }
 a:hover {
 	text-decoration: underline dotted;
+}
+ul {
+	padding: 0;
+	list-style-type: none;
 }
 
 @media (max-width: 500px) {
