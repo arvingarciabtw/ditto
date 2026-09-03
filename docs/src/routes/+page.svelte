@@ -1,14 +1,12 @@
+<script>
+	import Keyboard from "$lib/components/keyboard.svelte";
+</script>
+
 <main>
-	<!-- i won't add these two sections for now, these are more like side  -->
-	<!--    quests i should do once i'm done with the base docs stuff. -->
-
-	<!-- <section class="keyboard"> -->
-	<!-- 	<p class="subtext">&#123;pretend keyboard...&#125;</p> -->
-	<!-- </section> -->
-
-	<!-- <section class="keycaster"> -->
-	<!-- 	<p class="subtext">&#123;pretend keycaster...&#125;</p> -->
-	<!-- </section> -->
+	<section class="keyboard">
+		<p class="subtext">try typing!</p>
+		<Keyboard />
+	</section>
 
 	<section class="description">
 		<p class="subtext">
@@ -48,5 +46,8 @@
 	}
 	section {
 		max-width: 60rem;
+	}
+	section.keyboard p {
+		margin-bottom: 2rem;
 	}
 </style>
