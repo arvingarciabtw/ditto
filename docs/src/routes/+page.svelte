@@ -3,6 +3,10 @@
 </script>
 
 <main>
+	<section class="keyboard">
+		<Keyboard />
+	</section>
+
 	<section class="docs">
 		<p class="subtext">
 			see the
@@ -13,13 +17,10 @@
 				target="_blank"
 				rel="noopener noreferrer">releases</a
 			>
-			for the installation.
+			for the installation. see the
+			<a href="/motivation">motivation</a>
+			behind it!
 		</p>
-	</section>
-
-	<section class="keyboard">
-		<Keyboard />
-		<blockquote>this keyboard updates... try typing! •ᴗ•</blockquote>
 	</section>
 
 	<section class="description">
@@ -28,14 +29,6 @@
 			your live keyboard inputs in real time, even when the terminal isn't in focus. it
 			automatically syncs with your native terminal color scheme for seamless, interactive eye
 			candy.
-		</p>
-	</section>
-
-	<section class="motivation">
-		<p class="subtext">
-			see the
-			<a href="/motivation">motivation</a>
-			behind it!
 		</p>
 	</section>
 </main>
@@ -49,10 +42,10 @@
 	section {
 		max-width: 60rem;
 	}
-	section.keyboard blockquote {
-		padding-left: 1rem;
-		margin-top: 2rem;
-		border-left: 4px solid var(--surface1);
-		color: var(--overlay1);
+
+	@media (max-width: 650px) {
+		section.keyboard {
+			display: none;
+		}
 	}
 </style>

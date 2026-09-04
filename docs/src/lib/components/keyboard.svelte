@@ -328,6 +328,7 @@
 		{/each}
 	</div>
 </div>
+<blockquote>this keyboard updates... try typing! •ᴗ•</blockquote>
 
 <style>
 	.keyboard-wrapper {
@@ -345,7 +346,6 @@
 	.char {
 		margin: 0;
 		padding: 0;
-		line-height: 1.1;
 		white-space: pre; /* to prevent html ignoring extra spaces in strings */
 		color: var(--overlay1);
 	}
@@ -371,5 +371,22 @@
 		/* font-style: italic; */
 		font-weight: 900;
 		color: var(--rosewater);
+	}
+	blockquote {
+		padding-left: 1rem;
+		margin-top: 2rem;
+		border-left: 4px solid var(--surface1);
+		color: var(--overlay1);
+	}
+
+	@media (max-width: 900px) {
+		.keyboard-wrapper {
+			font-size: 12px;
+		}
+	}
+	@media (max-width: 750px) {
+		.keyboard-wrapper {
+			font-size: 10px;
+		}
 	}
 </style>
