@@ -2,6 +2,7 @@
 	<section class="getting-started">
 		<p class="label">getting started</p>
 		<ul>
+			<li><a href="/motivation">motivation</a></li>
 			<li><a href="/installation">installation</a></li>
 			<li><a href="/permissions">permissions</a></li>
 			<li><a href="/config">config</a></li>

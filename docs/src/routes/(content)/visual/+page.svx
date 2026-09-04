@@ -4,17 +4,19 @@
 
 # visual
 
-<!-- NOTE: add gif here -->
-
 press `v` to toggle between ascii and box-draw rendering. the selected style applies to the keyboard in default mode and the keys shown in keycast mode.
 
 ditto uses your terminal palette so it fits your existing color scheme.
 
 ## ascii
 
+![ASCII visual](/visual-ascii.gif) 
+
 if you prefer a traditional, more disconnected look, then use the ascii visual.
 
 ## box-draw 
+
+![Box draw visual](/visual-box-draw.gif) 
 
 if you prefer a smoother look, then use the box-draw visual which uses box drawing characters.
 

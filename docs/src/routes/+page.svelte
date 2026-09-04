@@ -6,7 +6,7 @@
 	<section class="docs">
 		<p class="subtext">
 			see the
-			<a href="/installation">docs</a>
+			<a href="/motivation">docs</a>
 			to get started. see
 			<a
 				href="https://github.com/arvingarciabtw/ditto/releases"
@@ -19,7 +19,7 @@
 
 	<section class="keyboard">
 		<Keyboard />
-		<p class="subtext">try typing!</p>
+		<blockquote>this keyboard updates... try typing! •ᴗ•</blockquote>
 	</section>
 
 	<section class="description">
@@ -28,6 +28,14 @@
 			your live keyboard inputs in real time, even when the terminal isn't in focus. it
 			automatically syncs with your native terminal color scheme for seamless, interactive eye
 			candy.
+		</p>
+	</section>
+
+	<section class="motivation">
+		<p class="subtext">
+			see the
+			<a href="/motivation">motivation</a>
+			behind it!
 		</p>
 	</section>
 </main>
@@ -41,7 +49,10 @@
 	section {
 		max-width: 60rem;
 	}
-	section.keyboard p {
+	section.keyboard blockquote {
+		padding-left: 1rem;
 		margin-top: 2rem;
+		border-left: 4px solid var(--surface1);
+		color: var(--overlay1);
 	}
 </style>

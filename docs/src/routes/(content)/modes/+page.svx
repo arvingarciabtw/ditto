@@ -8,13 +8,13 @@ ditto has two modes: default and keycast. press `m` to switch between them.
 
 ## default
 
-<!-- NOTE: add gif here -->
+![Default mode](/modes-default.gif) 
 
 default mode displays a full keyboard using your selected layout, size, and standard. pressed keys light up as you type, even when another window is focused.
 
 ## keycast
 
-<!-- NOTE: add gif here -->
+![Keycast mode](/modes-keycast.gif) 
 
 keycast mode displays pressed keys more clearly, similar to other keycasting software. for better visibility, use a floating terminal and increase its font size.
 

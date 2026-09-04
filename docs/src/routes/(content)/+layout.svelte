@@ -32,6 +32,13 @@
 		margin-top: 1rem;
 		color: var(--subtext0);
 	}
+	:global(article del) {
+		color: var(--overlay1);
+	}
+	:global(article img) {
+		margin: 2rem 0;
+		border: 1px dashed var(--base);
+	}
 	:global(article h1) {
 		font-size: 1rem;
 		font-weight: 400;
