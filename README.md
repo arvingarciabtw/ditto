@@ -12,6 +12,8 @@
 
 Ditto is a system-wide ASCII keyboard visualizer and keycaster that mirrors your live keyboard inputs in real time, even when the terminal isn't in focus. It automatically syncs with your native terminal color scheme for seamless, interactive eye candy. If you love it, drop a ⭐ on the repo!
 
+You can also check out the docs on the [website](https://ditto.arvingarcia.com).
+
 ## Showcase
 
 <table>
