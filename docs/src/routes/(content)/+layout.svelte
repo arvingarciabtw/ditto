@@ -37,6 +37,7 @@
 	}
 	:global(article img) {
 		margin: 2rem 0;
+		height: auto;
 		border: 1px dashed var(--base);
 	}
 	:global(article h1) {

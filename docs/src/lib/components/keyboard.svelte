@@ -347,7 +347,7 @@
 		margin: 0;
 		padding: 0;
 		white-space: pre; /* to prevent html ignoring extra spaces in strings */
-		color: var(--overlay1);
+		color: var(--surface2);
 	}
 	.char.box-drawing {
 		transform: scaleY(var(--cell-height-scale));

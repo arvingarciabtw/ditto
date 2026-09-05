@@ -15,18 +15,26 @@
 <header>
 	<div class="left">
 		<a class="name" href="/">ditto</a>
-		<span class="version">
-			<div class="icon">
-				<Version />
-			</div>
-			<p class="label">v1.3.3</p>
-		</span>
-		<span class="stars">
-			<div class="icon">
-				<Star />
-			</div>
-			<p class="label">120+</p>
-		</span>
+		<a
+			href="https://github.com/arvingarciabtw/ditto"
+			target="_blank"
+			rel="external noopener noreferrer"
+		>
+			<span class="version">
+				<Version size={14} />
+				<p class="label">v1.3.3</p>
+			</span>
+		</a>
+		<a
+			href="https://github.com/arvingarciabtw/ditto"
+			target="_blank"
+			rel="external noopener noreferrer"
+		>
+			<span class="stars">
+				<Star size={14} />
+				<p class="label">120+</p>
+			</span>
+		</a>
 	</div>
 	<div class="right">
 		<button class="icon" onclick={handleClick}>
@@ -105,7 +113,7 @@
 				margin-bottom: 4rem;
 			}
 			p {
-				color: var(--sapphire);
+				color: var(--teal);
 			}
 			ul {
 				margin-top: 2rem;
@@ -128,21 +136,25 @@
 		color: var(--sapphire);
 	}
 
+	.name:hover {
+		text-decoration: underline dotted;
+	}
 	.version,
 	.stars {
 		display: grid;
 		grid-template-columns: repeat(2, max-content);
+		align-items: center;
 		gap: 0.75rem;
-		.icon {
-			width: 14px;
-			height: 14px;
-		}
 	}
 	.version {
 		color: var(--green);
 	}
 	.stars {
 		color: var(--yellow);
+	}
+	.version:hover,
+	.stars:hover {
+		text-decoration: underline dotted;
 	}
 
 	a {

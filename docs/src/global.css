@@ -96,7 +96,7 @@ html {
 @font-face {
 	font-family: "commit-mono";
 	font-display: swap;
-	src: url("/commit-mono-regular-subset.woff2") format("woff2");
+	src: url("/commit-mono-vf.woff2") format("woff2");
 }
 
 /* animations. */

@@ -10,13 +10,13 @@ ditto uses your terminal palette so it fits your existing color scheme.
 
 ## ascii
 
-![ASCII visual](/visual-ascii.gif) 
+<img src="/visual-ascii.gif" alt="ASCII visual" width="1280" height="512" />
 
 if you prefer a traditional, more disconnected look, then use the ascii visual.
 
 ## box-draw 
 
-![Box draw visual](/visual-box-draw.gif) 
+<img src="/visual-box-draw.gif" alt="Box draw visual" width="1280" height="512" />
 
 if you prefer a smoother look, then use the box-draw visual which uses box drawing characters.
 

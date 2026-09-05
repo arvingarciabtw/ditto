@@ -8,7 +8,7 @@ there are lists that let you change the keyboard size, layout, and physical stan
 
 ## size list
 
-![Size list](/lists-size.gif) 
+<img src="/lists-size.gif" alt="Size list" width="1280" height="512" />
 
 press `s` to open the size list. this determines which physical key matrix ditto renders.
 
@@ -23,7 +23,7 @@ press `s` to open the size list. this determines which physical key matrix ditto
 
 ## layout list
 
-![Layout list](/lists-layout.gif) 
+<img src="/lists-layout.gif" alt="Layout list" width="1280" height="512" />
 
 press `l` to open the layout list. this determines how physical keys are remapped.
 
@@ -43,7 +43,7 @@ press `l` to open the layout list. this determines how physical keys are remappe
 
 ## standard list
 
-![Standard list](/lists-standard.gif) 
+<img src="/lists-standard.gif" alt="Standard list" width="1280" height="512" />
 
 press `d` to open the standard list. this determines the physical keyboard standard.
 

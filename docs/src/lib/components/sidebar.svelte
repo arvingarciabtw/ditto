@@ -37,7 +37,7 @@
 		gap: 0.5rem;
 	}
 	p.label {
-		color: var(--maroon);
+		color: var(--teal);
 	}
 
 	@media (max-width: 850px) {
