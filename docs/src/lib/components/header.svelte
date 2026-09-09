@@ -6,9 +6,7 @@
 	let showMobileNav = $state(false);
 
 	function handleClick() {
-		console.log("before", showMobileNav);
 		showMobileNav = !showMobileNav;
-		console.log("after", showMobileNav);
 	}
 </script>
 
@@ -95,7 +93,7 @@
 		background: var(--crust);
 
 		.top {
-			margin-bottom: 4rem;
+			margin-bottom: 2rem;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
