@@ -13,6 +13,13 @@
 		"Shift"
 	]);
 	/** @type {Record<string, string>} */
+	const displayKeyByEventKey = {
+		ArrowUp: "↑",
+		ArrowDown: "↓",
+		ArrowLeft: "←",
+		ArrowRight: "→"
+	};
+	/** @type {Record<string, string>} */
 	const fingerByCode = Object.fromEntries(
 		Object.entries({
 			pinky:
@@ -35,7 +42,7 @@
 		const cast = (event) => {
 			if (ignoredKeys.has(event.key)) return;
 
-			key = event.key === " " ? "Space" : event.key;
+			key = displayKeyByEventKey[event.key] ?? (event.key === " " ? "Space" : event.key);
 			finger = fingerByCode[event.code] ?? "";
 			visible = true;
 			window.clearTimeout(hideTimer);
