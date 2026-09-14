@@ -116,7 +116,7 @@
 			ul {
 				margin-top: 2rem;
 				display: grid;
-				gap: 0.5rem;
+				gap: 0.75rem;
 			}
 			a {
 				color: var(--text);
