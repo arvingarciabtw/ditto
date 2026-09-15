@@ -8,10 +8,10 @@
 
 if you've seen rices over at places like [r/unixp*rn](https://www.reddit.com/r/unixporn/), every now and then you'll see some dev layouts where you'd have a code editor, then some eye candy off to the side (think: [pipes.sh](https://github.com/pipeseroni/pipes.sh) and [cmatrix](https://github.com/abishekvashok/cmatrix)). a random thought came up to me: a keyboard visualizer would be kinda cool.
 
-and so, i made this keyboard visualizer that updates no matter which window has focus! you code away on your editor, and the ascii keyboard on the corner lights up!
+and so, i made this keyboard visualizer that updates no matter which window has focus. you code away on your editor, and the ascii keyboard on the corner lights up!
 
 practically, it could have a niche use, like sharing your screen with other people so ~~you can flex your vim skills~~ they can see the keys you press as you navigate through your workflow.
 
-it's not the most practical thing in the world that solves a *really* important problem, but i think it's cool and you might too! and after all, we should code something fun and interesting right?
+it's not the most practical thing in the world that solves a *really* important problem, but i hope you find it interesting and neat!
 
 <Next url="/installation" label="installation" />
