@@ -1,26 +1,33 @@
 <aside>
-	<section class="getting-started">
-		<p class="label">getting started</p>
-		<ul>
-			<li><a href="/motivation">motivation</a></li>
-			<li><a href="/installation">installation</a></li>
-			<li><a href="/permissions">permissions</a></li>
-			<li><a href="/config">config</a></li>
-		</ul>
-	</section>
-	<section class="usage">
-		<p class="label">usage</p>
-		<ul>
-			<li><a href="/modes">modes</a></li>
-			<li><a href="/visual">visual</a></li>
-			<li><a href="/lists">lists</a></li>
-			<li><a href="/lock">lock</a></li>
-			<li><a href="/custom-layouts">custom layouts</a></li>
-		</ul>
-	</section>
+	<div class="wrapper">
+		<section class="getting-started">
+			<p class="label">getting started</p>
+			<ul>
+				<li><a href="/motivation">motivation</a></li>
+				<li><a href="/installation">installation</a></li>
+				<li><a href="/permissions">permissions</a></li>
+				<li><a href="/config">config</a></li>
+			</ul>
+		</section>
+		<section class="usage">
+			<p class="label">usage</p>
+			<ul>
+				<li><a href="/modes">modes</a></li>
+				<li><a href="/visual">visual</a></li>
+				<li><a href="/lists">lists</a></li>
+				<li><a href="/lock">lock</a></li>
+				<li><a href="/custom-layouts">custom layouts</a></li>
+			</ul>
+		</section>
+	</div>
 </aside>
 
 <style>
+	.wrapper {
+		padding-top: 1.5rem;
+		position: sticky;
+		top: 0;
+	}
 	section {
 		margin-bottom: 4rem;
 	}

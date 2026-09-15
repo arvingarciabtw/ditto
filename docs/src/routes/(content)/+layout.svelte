@@ -26,6 +26,7 @@
 
 	/* to style our markdown */
 	:global(article) {
+		padding-top: 1.5rem;
 		min-width: 0;
 	}
 	:global(article p) {
@@ -115,6 +116,12 @@
 		margin-top: 1rem;
 		padding-left: 1rem;
 		border-left: 4px solid var(--surface0);
+	}
+
+	@media (max-width: 850px) {
+		:global(article) {
+			padding-top: 0;
+		}
 	}
 
 	@media (max-width: 500px) {

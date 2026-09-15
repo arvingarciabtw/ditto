@@ -48,7 +48,14 @@
 		max-width: 60rem;
 	}
 	section.keyboard {
+		margin-top: 2rem;
 		margin-bottom: 4rem;
+	}
+
+	@media (max-width: 850px) {
+		section.keyboard {
+			margin-top: 1rem;
+		}
 	}
 
 	@media (max-width: 650px) {
