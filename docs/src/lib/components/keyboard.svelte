@@ -109,21 +109,96 @@
 		NumpadDecimal: "."
 	};
 
-	const pressedCodes = new SvelteSet<string>();
+	const shiftedLabelByCode: Record<string, string> = {
+		Backquote: "~",
+		Digit1: "!",
+		Digit2: "@",
+		Digit3: "#",
+		Digit4: "$",
+		Digit5: "%",
+		Digit6: "^",
+		Digit7: "&",
+		Digit8: "*",
+		Digit9: "(",
+		Digit0: ")",
+		Minus: "_",
+		Equal: "+",
+		BracketLeft: "{",
+		BracketRight: "}",
+		Backslash: "|",
+		Semicolon: ":",
+		Quote: '"',
+		Comma: "<",
+		Period: ">",
+		Slash: "?"
+	};
 
-	function isPressed(label: string) {
-		for (const code of pressedCodes) {
-			if (labelByCode[code] === label) return true;
+	const latchModifierByCode: Record<string, string> = {
+		CapsLock: "CapsLock",
+		NumLock: "NumLock",
+		ScrollLock: "ScrollLock"
+	};
+
+	const pressedCodes = new SvelteSet<string>();
+	const latchedCodes = new SvelteSet<string>();
+
+	function isShiftDown() {
+		return pressedCodes.has("ShiftLeft") || pressedCodes.has("ShiftRight");
+	}
+
+	function isLit(code: string) {
+		return pressedCodes.has(code) || latchedCodes.has(code);
+	}
+
+	function isCapsOn() {
+		return latchedCodes.has("CapsLock");
+	}
+
+	function labelOf(code: string) {
+		const label = labelByCode[code] ?? "";
+		if (!isShiftDown()) return label;
+		// Caps + Shift inverts letter case, like a real board. "Key*" is only KeyA..KeyZ.
+		if (isCapsOn() && code.startsWith("Key")) return label.toLowerCase();
+		return shiftedLabelByCode[code] ?? label;
+	}
+
+	function flipLatch(code: string) {
+		if (latchedCodes.has(code)) latchedCodes.delete(code);
+		else latchedCodes.add(code);
+	}
+
+	function syncLatches(event: KeyboardEvent) {
+		for (const [code, modifier] of Object.entries(latchModifierByCode)) {
+			if (event.getModifierState(modifier)) latchedCodes.add(code);
+			else latchedCodes.delete(code);
 		}
-		return false;
+	}
+
+	function resyncLatches() {
+		const probe = new KeyboardEvent("keydown");
+		for (const [code, modifier] of Object.entries(latchModifierByCode)) {
+			// Only ever turn a latch on. Browsers disagree on whether getModifierState()
+			// reflects real hardware for synthetic events (Firefox does, Chrome always
+			// says false), and a false result must never clear a correct indicator.
+			if (probe.getModifierState(modifier)) latchedCodes.add(code);
+		}
 	}
 
 	onMount(() => {
 		const press = (event: KeyboardEvent) => {
-			if (!labelByCode[event.code]) return;
+			if (event.code in latchModifierByCode) {
+				// A lock key physically toggles, but its own keydown/keyup can still report
+				// the previous state (and macOS never fires keyup for it), so trust the press
+				// instead of the reported state. `repeat` guards against auto-repeat flicker.
+				if (!event.repeat) flipLatch(event.code);
+				return;
+			}
+			syncLatches(event);
 			pressedCodes.add(event.code);
 		};
 		const release = (event: KeyboardEvent) => {
+			if (event.code in latchModifierByCode) return;
+			syncLatches(event);
 			pressedCodes.delete(event.code);
 		};
 		const clear = () => pressedCodes.clear();
@@ -131,17 +206,21 @@
 		window.addEventListener("keydown", press);
 		window.addEventListener("keyup", release);
 		window.addEventListener("blur", clear);
+		window.addEventListener("focus", resyncLatches);
+		document.addEventListener("visibilitychange", resyncLatches);
 
 		return () => {
 			window.removeEventListener("keydown", press);
 			window.removeEventListener("keyup", release);
 			window.removeEventListener("blur", clear);
+			window.removeEventListener("focus", resyncLatches);
+			document.removeEventListener("visibilitychange", resyncLatches);
 		};
 	});
 </script>
 
 {#snippet gridkey(
-	content: string,
+	code: string,
 	finger: string,
 	topBorder: boolean = false,
 	rightBorder: boolean = true,
@@ -149,15 +228,21 @@
 	leftBorder: boolean = false
 )}
 	<div
-		class={`key ${finger} ${topBorder ? "top-border" : "no-top-border"} ${rightBorder ? "right-border" : "no-right-border"} ${bottomBorder ? "bottom-border" : "no-bottom-border"} ${leftBorder ? "left-border" : "no-left-border"}`}
+		class={`key ${isLit(code) ? "active" : "inactive"} ${finger} ${topBorder ? "top-border" : "no-top-border"} ${rightBorder ? "right-border" : "no-right-border"} ${bottomBorder ? "bottom-border" : "no-bottom-border"} ${leftBorder ? "left-border" : "no-left-border"}`}
 	>
-		<p class:active={isPressed(content)}>{content}</p>
+		<p>{labelOf(code)}</p>
+	</div>
+{/snippet}
+
+{#snippet abskey(code: string, finger: string)}
+	<div class={`key abs ${isLit(code) ? "active" : "inactive"} ${finger}`}>
+		<p>{labelOf(code)}</p>
 	</div>
 {/snippet}
 
 <div class="grid-keyboard">
 	<div class="row top">
-		{@render gridkey("Esc", "pinky")}
+		{@render gridkey("Escape", "pinky")}
 		{@render gridkey("", "")}
 		{@render gridkey("F1", "pinky")}
 		{@render gridkey("F2", "ring")}
@@ -174,132 +259,131 @@
 		{@render gridkey("F11", "pinky")}
 		{@render gridkey("F12", "pinky")}
 		{@render gridkey("", "", false, true, false)}
-		{@render gridkey("Prt", "index")}
-		{@render gridkey("Slk", "middle")}
-		{@render gridkey("Fls", "ring")}
+		{@render gridkey("PrintScreen", "index")}
+		{@render gridkey("ScrollLock", "middle")}
+		{@render gridkey("Pause", "ring")}
 		{@render gridkey("", "", false, false, false)}
 		{@render gridkey("", "", false, false)}
 	</div>
 	<div class="row number">
-		{@render gridkey("`", "pinky")}
-		{@render gridkey("1", "pinky")}
-		{@render gridkey("2", "ring")}
-		{@render gridkey("3", "middle")}
-		{@render gridkey("4", "index")}
-		{@render gridkey("5", "index")}
-		{@render gridkey("6", "index")}
-		{@render gridkey("7", "index")}
-		{@render gridkey("8", "middle")}
-		{@render gridkey("9", "ring")}
-		{@render gridkey("0", "pinky")}
-		{@render gridkey("-", "pinky")}
-		{@render gridkey("=", "pinky")}
-		{@render gridkey("<--", "pinky")}
+		{@render gridkey("Backquote", "pinky")}
+		{@render gridkey("Digit1", "pinky")}
+		{@render gridkey("Digit2", "ring")}
+		{@render gridkey("Digit3", "middle")}
+		{@render gridkey("Digit4", "index")}
+		{@render gridkey("Digit5", "index")}
+		{@render gridkey("Digit6", "index")}
+		{@render gridkey("Digit7", "index")}
+		{@render gridkey("Digit8", "middle")}
+		{@render gridkey("Digit9", "ring")}
+		{@render gridkey("Digit0", "pinky")}
+		{@render gridkey("Minus", "pinky")}
+		{@render gridkey("Equal", "pinky")}
+		{@render gridkey("Backspace", "pinky")}
 		{@render gridkey("", "", false, true, false)}
-		{@render gridkey("Ins", "index")}
-		{@render gridkey("Hme", "middle")}
-		{@render gridkey("PgU", "ring")}
+		{@render gridkey("Insert", "index")}
+		{@render gridkey("Home", "middle")}
+		{@render gridkey("PageUp", "ring")}
 		{@render gridkey("", "", false, true, false)}
-		{@render gridkey("Nlk", "index")}
-		{@render gridkey("/", "middle")}
-		{@render gridkey("*", "ring")}
-		{@render gridkey("-", "pinky", false, false)}
+		{@render gridkey("NumLock", "index")}
+		{@render gridkey("NumpadDivide", "middle")}
+		{@render gridkey("NumpadMultiply", "ring")}
+		{@render gridkey("NumpadSubtract", "pinky", false, false)}
 	</div>
 	<div class="row qwer">
 		{@render gridkey("Tab", "pinky")}
-		{@render gridkey("Q", "pinky")}
-		{@render gridkey("W", "ring")}
-		{@render gridkey("E", "middle")}
-		{@render gridkey("R", "index")}
-		{@render gridkey("T", "index")}
-		{@render gridkey("Y", "index")}
-		{@render gridkey("U", "index")}
-		{@render gridkey("I", "middle")}
-		{@render gridkey("O", "ring")}
-		{@render gridkey("P", "pinky")}
-		{@render gridkey("[", "pinky")}
-		{@render gridkey("]", "pinky")}
-		{@render gridkey("\\", "pinky")}
+		{@render gridkey("KeyQ", "pinky")}
+		{@render gridkey("KeyW", "ring")}
+		{@render gridkey("KeyE", "middle")}
+		{@render gridkey("KeyR", "index")}
+		{@render gridkey("KeyT", "index")}
+		{@render gridkey("KeyY", "index")}
+		{@render gridkey("KeyU", "index")}
+		{@render gridkey("KeyI", "middle")}
+		{@render gridkey("KeyO", "ring")}
+		{@render gridkey("KeyP", "pinky")}
+		{@render gridkey("BracketLeft", "pinky")}
+		{@render gridkey("BracketRight", "pinky")}
+		{@render gridkey("Backslash", "pinky")}
 		{@render gridkey("", "", false, true, false)}
-		{@render gridkey("Del", "index")}
+		{@render gridkey("Delete", "index")}
 		{@render gridkey("End", "middle")}
-		{@render gridkey("PgD", "ring")}
+		{@render gridkey("PageDown", "ring")}
 		{@render gridkey("", "", false, true, false)}
-		{@render gridkey("7", "index")}
-		{@render gridkey("8", "middle")}
-		{@render gridkey("9", "ring")}
-		<div class="key abs" class:active={isPressed("+")}>
-			<p class:active={isPressed("+")}>+</p>
-		</div>
+		{@render gridkey("Numpad7", "index")}
+		{@render gridkey("Numpad8", "middle")}
+		{@render gridkey("Numpad9", "ring")}
+		{@render abskey("NumpadAdd", "ring")}
 		{@render gridkey("", "", false, false, false)}
 	</div>
 	<div class="row asdf">
-		{@render gridkey("Caps", "pinky")}
-		{@render gridkey("A", "pinky")}
-		{@render gridkey("S", "ring")}
-		{@render gridkey("D", "middle")}
-		{@render gridkey("F", "index")}
-		{@render gridkey("G", "index")}
-		{@render gridkey("H", "index")}
-		{@render gridkey("J", "index")}
-		{@render gridkey("K", "middle")}
-		{@render gridkey("L", "ring")}
-		{@render gridkey(";", "pinky")}
-		{@render gridkey("'", "pinky")}
+		{@render gridkey("CapsLock", "pinky")}
+		{@render gridkey("KeyA", "pinky")}
+		{@render gridkey("KeyS", "ring")}
+		{@render gridkey("KeyD", "middle")}
+		{@render gridkey("KeyF", "index")}
+		{@render gridkey("KeyG", "index")}
+		{@render gridkey("KeyH", "index")}
+		{@render gridkey("KeyJ", "index")}
+		{@render gridkey("KeyK", "middle")}
+		{@render gridkey("KeyL", "ring")}
+		{@render gridkey("Semicolon", "pinky")}
+		{@render gridkey("Quote", "pinky")}
 		{@render gridkey("Enter", "pinky")}
 		{@render gridkey("", "", false, true, false)}
-		{@render gridkey("4", "index")}
-		{@render gridkey("5", "middle")}
-		{@render gridkey("6", "ring")}
+		{@render gridkey("Numpad4", "index")}
+		{@render gridkey("Numpad5", "middle")}
+		{@render gridkey("Numpad6", "ring")}
 		{@render gridkey("", "", false, false)}
 	</div>
 	<div class="row zxcv">
-		{@render gridkey("Shift", "pinky")}
-		{@render gridkey("Z", "pinky")}
-		{@render gridkey("X", "ring")}
-		{@render gridkey("C", "middle")}
-		{@render gridkey("V", "index")}
-		{@render gridkey("B", "index")}
-		{@render gridkey("N", "index")}
-		{@render gridkey("M", "index")}
-		{@render gridkey(",", "middle")}
-		{@render gridkey(".", "ring")}
-		{@render gridkey("/", "pinky")}
-		{@render gridkey("Shift", "pinky")}
+		{@render gridkey("ShiftLeft", "pinky")}
+		{@render gridkey("KeyZ", "pinky")}
+		{@render gridkey("KeyX", "ring")}
+		{@render gridkey("KeyC", "middle")}
+		{@render gridkey("KeyV", "index")}
+		{@render gridkey("KeyB", "index")}
+		{@render gridkey("KeyN", "index")}
+		{@render gridkey("KeyM", "index")}
+		{@render gridkey("Comma", "middle")}
+		{@render gridkey("Period", "ring")}
+		{@render gridkey("Slash", "pinky")}
+		{@render gridkey("ShiftRight", "pinky")}
 		{@render gridkey("", "", false, false, false)}
 		{@render gridkey("", "", false, true, true, false)}
-		{@render gridkey("↑", "middle", true)}
+		{@render gridkey("ArrowUp", "middle", true)}
 		{@render gridkey("", "", false, false, true, false)}
 		{@render gridkey("", "", false, true, false)}
-		{@render gridkey("1", "index")}
-		{@render gridkey("2", "middle")}
-		{@render gridkey("3", "ring")}
-		<div class="key abs" class:active={isPressed("E")}>
-			<p class:active={isPressed("E")}>E</p>
-		</div>
+		{@render gridkey("Numpad1", "index")}
+		{@render gridkey("Numpad2", "middle")}
+		{@render gridkey("Numpad3", "ring")}
+		{@render abskey("NumpadEnter", "ring")}
 		{@render gridkey("", "", false, false, false)}
 	</div>
 	<div class="row bottom">
-		{@render gridkey("Ctrl", "pinky")}
-		{@render gridkey("⌘", "ring")}
-		{@render gridkey("Alt", "ring")}
+		{@render gridkey("ControlLeft", "pinky")}
+		{@render gridkey("MetaLeft", "ring")}
+		{@render gridkey("AltLeft", "ring")}
 		{@render gridkey("Space", "thumb")}
-		{@render gridkey("Alt", "ring")}
-		{@render gridkey("⌘", "ring")}
+		{@render gridkey("AltRight", "ring")}
+		{@render gridkey("MetaRight", "ring")}
 		{@render gridkey("Fn", "ring")}
-		{@render gridkey("Ctrl", "pinky")}
+		{@render gridkey("ControlRight", "pinky")}
 		{@render gridkey("", "")}
-		{@render gridkey("←", "index")}
-		{@render gridkey("↓", "middle")}
-		{@render gridkey("→", "ring")}
+		{@render gridkey("ArrowLeft", "index")}
+		{@render gridkey("ArrowDown", "middle")}
+		{@render gridkey("ArrowRight", "ring")}
 		{@render gridkey("", "")}
-		{@render gridkey("0", "index")}
-		{@render gridkey(".", "ring")}
+		{@render gridkey("Numpad0", "index")}
+		{@render gridkey("NumpadDecimal", "ring")}
 		{@render gridkey("", "", false, false)}
 	</div>
 </div>
 
-<blockquote>this keyboard updates... try typing! •ᴗ•</blockquote>
+<blockquote>
+	this keyboard updates, try typing! take note that the actual tui program visualizes a bit
+	differently due to terminal limitations (⌐■-■)
+</blockquote>
 
 <style>
 	blockquote {
@@ -307,6 +391,7 @@
 		margin-top: 2rem;
 		border-left: 4px solid var(--surface1);
 		color: var(--overlay1);
+		line-height: 2;
 	}
 
 	.grid-keyboard {
@@ -392,23 +477,29 @@
 			border-left: none;
 		}
 		.key.pinky {
-			color: var(--pink);
+			--finger: var(--pink);
+			color: var(--finger);
 		}
 		.key.ring {
-			color: var(--sapphire);
+			--finger: var(--sapphire);
+			color: var(--finger);
 		}
 		.key.middle {
-			color: var(--green);
+			--finger: var(--green);
+			color: var(--finger);
 		}
 		.key.index {
-			color: var(--peach);
+			--finger: var(--peach);
+			color: var(--finger);
 		}
 		.key.thumb {
-			color: var(--red);
+			--finger: var(--red);
+			color: var(--finger);
 		}
-		.key p.active {
-			color: var(--rosewater);
-			font-weight: 900;
+		.key.active {
+			color: var(--crust);
+			background: var(--finger);
+			border-color: var(--finger);
 		}
 	}
 

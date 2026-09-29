@@ -9,6 +9,13 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<link
+		rel="preload"
+		href="/commit-mono-vf.woff2"
+		as="font"
+		type="font/woff2"
+		crossorigin="anonymous"
+	/>
 	<title>ditto</title>
 </svelte:head>
 

@@ -7,33 +7,49 @@
 		<Keyboard />
 	</section>
 
+	<section class="keyboard-disclosure">
+		<blockquote>
+			on larger viewports, this page shows an interactive keyboard. see the site on desktop if you
+			wanna mess around with it! (⌐■ᴗ■)
+		</blockquote>
+	</section>
+
 	<section class="description">
 		<p class="subtext">
 			ditto is a cross-platform, system-wide ascii keyboard visualizer and keycaster that mirrors
-			your live keyboard inputs in real time, even when the terminal isn't in focus. it
-			automatically syncs with your native terminal color scheme for seamless, interactive eye
-			candy.
+			your live keyboard inputs in real time, even when the terminal isn't in focus. automatically
+			syncs with your native terminal color scheme for seamless, interactive eye candy.
 		</p>
 	</section>
 
-	<section class="docs">
+	<section>
 		<p class="subtext">
 			to get started, see the
-			<a href="/motivation">docs</a>
-			if it fits your use case or if you'd like to mess around and have fun with it.
+			<a class="docs" href="/motivation">motivation</a>
+			behind it and see if you find it interesting.
 		</p>
 	</section>
 
-	<section class="docs">
+	<section>
+		<p class="subtext">
+			if you quickly want to see what it looks like, take a peek at the
+			<a class="lists" href="/lists">lists</a>,
+			<a class="visual" href="/visual">visual</a>, and
+			<a class="modes" href="/modes">modes</a> pages.
+		</p>
+	</section>
+
+	<section>
 		<p class="subtext">
 			see the
 			<a
+				class="releases"
 				href="https://github.com/arvingarciabtw/ditto/releases"
 				target="_blank"
 				rel="noopener noreferrer">releases</a
 			>
 			for the installation. if you're on linux, there are other
-			<a href="/installation">options</a>.
+			<a class="options" href="/installation">options</a>.
 		</p>
 	</section>
 </main>
@@ -48,8 +64,24 @@
 		max-width: 60rem;
 	}
 	section.keyboard {
-		margin-top: 2rem;
-		margin-bottom: 4rem;
+		margin: 2rem 0;
+	}
+	section.keyboard-disclosure {
+		display: none;
+	}
+	.docs {
+		color: var(--mauve);
+	}
+	.lists,
+	.visual,
+	.modes {
+		color: var(--sapphire);
+	}
+	.releases {
+		color: var(--green);
+	}
+	.options {
+		color: var(--yellow);
 	}
 
 	@media (max-width: 850px) {
@@ -61,6 +93,14 @@
 	@media (max-width: 650px) {
 		section.keyboard {
 			display: none;
+		}
+		section.keyboard-disclosure {
+			display: block;
+			padding-left: 1rem;
+			margin: 0rem;
+			border-left: 4px solid var(--surface1);
+			color: var(--overlay1);
+			line-height: 2;
 		}
 		main {
 			place-content: center;
