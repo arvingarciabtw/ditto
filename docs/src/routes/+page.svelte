@@ -48,8 +48,8 @@
 				target="_blank"
 				rel="noopener noreferrer">releases</a
 			>
-			for the installation. if you're on linux, there are other
-			<a class="options" href="/installation">options</a>.
+			to install. if you're on linux, there are other
+			<a class="options" href="/installation">installation</a> options.
 		</p>
 	</section>
 </main>

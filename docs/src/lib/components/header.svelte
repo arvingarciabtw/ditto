@@ -35,7 +35,7 @@
 		</a>
 	</div>
 	<div class="right">
-		<button class="icon" onclick={handleClick}>
+		<button class="icon" onclick={handleClick} aria-label="Open page navigation">
 			<Menu size={20} />
 		</button>
 	</div>
