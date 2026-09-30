@@ -1,5 +1,6 @@
 <script>
 	import Keyboard from "$lib/components/keyboard.svelte";
+	import Star from "@lucide/svelte/icons/star";
 </script>
 
 <main>
@@ -16,9 +17,9 @@
 
 	<section class="description">
 		<p class="subtext">
-			ditto is a cross-platform, system-wide ascii keyboard visualizer and keycaster that mirrors
-			your live keyboard inputs in real time, even when the terminal isn't in focus. automatically
-			syncs with your native terminal color scheme for seamless, interactive eye candy.
+			ditto is a cross-platform and system-wide keyboard visualizer and keycaster in the terminal
+			that works even when it isn't in focus. automatically syncs with your native terminal color
+			scheme. intended for folks who want to prettify their terminal setup.
 		</p>
 	</section>
 
@@ -52,6 +53,12 @@
 			<a class="options" href="/installation">installation</a> options.
 		</p>
 	</section>
+
+	<section>
+		<p class="subtext">
+			if you like it, a <span class="star"><Star /></span> is appreciated!
+		</p>
+	</section>
 </main>
 
 <style>
@@ -82,6 +89,18 @@
 	}
 	.options {
 		color: var(--yellow);
+	}
+	.star {
+		display: inline;
+		vertical-align: middle;
+		color: var(--yellow);
+
+		& :global(svg) {
+			display: inline;
+			width: 1em;
+			height: 1em;
+			fill: var(--yellow);
+		}
 	}
 
 	@media (max-width: 850px) {

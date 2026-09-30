@@ -1,5 +1,11 @@
 <script>
 	import Next from "$lib/components/next.svelte";
+  import sizeAvif from "$lib/assets/lists/size.avif";
+  import sizeGif from "$lib/assets/lists/size.gif";
+  import layoutAvif from "$lib/assets/lists/layout.avif";
+  import layoutGif from "$lib/assets/lists/layout.gif";
+  import standardAvif from "$lib/assets/lists/standard.avif";
+  import standardGif from "$lib/assets/lists/standard.gif";
 </script>
 
 # lists
@@ -8,7 +14,10 @@ there are lists that let you change the keyboard size, layout, and physical stan
 
 ## size list
 
-<img src="/lists-size.gif" alt="Size list" width="1280" height="512" />
+<picture>
+  <source srcset={sizeAvif} type="image/avif">
+  <img src={sizeGif} alt="Size list" width="826" height="332" fetchpriority="high"/>
+</picture>
 
 press `s` to open the size list. this determines which physical key matrix ditto renders.
 
@@ -23,7 +32,10 @@ press `s` to open the size list. this determines which physical key matrix ditto
 
 ## layout list
 
-<img src="/lists-layout.gif" alt="Layout list" width="1280" height="512" />
+<picture>
+  <source srcset={layoutAvif} type="image/avif">
+  <img src={layoutGif} alt="Layout list" width="826" height="332" fetchpriority="high"/>
+</picture>
 
 press `l` to open the layout list. this determines how physical keys are remapped.
 
@@ -43,7 +55,10 @@ press `l` to open the layout list. this determines how physical keys are remappe
 
 ## standard list
 
-<img src="/lists-standard.gif" alt="Standard list" width="1280" height="512" />
+<picture>
+  <source srcset={standardAvif} type="image/avif">
+  <img src={standardGif} alt="Standard list" width="826" height="332" fetchpriority="high"/>
+</picture>
 
 press `d` to open the standard list. this determines the physical keyboard standard.
 

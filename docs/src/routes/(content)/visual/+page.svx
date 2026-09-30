@@ -1,5 +1,9 @@
 <script>
 	import Next from "$lib/components/next.svelte";
+  import asciiAvif from "$lib/assets/visual/ascii.avif"
+  import asciiGif from "$lib/assets/visual/ascii.gif"
+  import boxDrawAvif from "$lib/assets/visual/box-draw.avif"
+  import boxDrawGif from "$lib/assets/visual/box-draw.gif"
 </script>
 
 # visual
@@ -10,13 +14,19 @@ ditto uses your terminal palette so it fits your existing color scheme.
 
 ## ascii
 
-<img src="/visual-ascii.gif" alt="ASCII visual" width="1280" height="512" />
+<picture>
+  <source srcset={asciiAvif} type="image/avif">
+  <img src={asciiGif} alt="ASCII visual" width="826" height="332" fetchpriority="high"/>
+</picture>
 
 if you prefer a traditional, more disconnected look, then use the ascii visual.
 
 ## box-draw 
 
-<img src="/visual-box-draw.gif" alt="Box draw visual" width="1280" height="512" />
+<picture>
+  <source srcset={boxDrawAvif} type="image/avif">
+  <img src={boxDrawGif} alt="Box draw visual" width="826" height="332" fetchpriority="high"/>
+</picture>
 
 if you prefer a smoother look, then use the box-draw visual which uses box drawing characters.
 

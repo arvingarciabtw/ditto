@@ -1,5 +1,9 @@
 <script>
 	import Next from "$lib/components/next.svelte";
+  import defaultAvif from "$lib/assets/modes/default.avif"
+  import defaultGif from "$lib/assets/modes/default.gif"
+  import keycastAvif from "$lib/assets/modes/keycast.avif"
+  import keycastGif from "$lib/assets/modes/keycast.gif"
 </script>
 
 # modes
@@ -8,13 +12,19 @@ ditto has two modes: default and keycast. press `m` to switch between them.
 
 ## default
 
-<img src="/modes-default.gif" alt="Default mode" width="1280" height="512" />
+<picture>
+  <source srcset={defaultAvif} type="image/avif">
+  <img src={defaultGif} alt="Default mode" width="826" height="332" fetchpriority="high"/>  
+</picture>
 
 default mode displays a full keyboard using your selected layout, size, and standard. pressed keys light up as you type, even when another window is focused.
 
 ## keycast
 
-<img src="/modes-keycast.gif" alt="Keycast mode" width="1280" height="512" />
+<picture>
+  <source srcset={keycastAvif} type="image/avif">
+  <img src={keycastGif} alt="Keycast mode" width="826" height="332" fetchpriority="high"/>
+</picture>
 
 keycast mode displays pressed keys more clearly, similar to other keycasting software. for better visibility, use a floating terminal and increase its font size.
 

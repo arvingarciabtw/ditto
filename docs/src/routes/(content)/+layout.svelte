@@ -39,7 +39,9 @@
 	:global(article img) {
 		margin: 2rem 0;
 		height: auto;
-		border: 1px dashed var(--base);
+		border: 1px dashed var(--surface0);
+		font-size: 0; /* to hide alt text while image hasn't loaded, for slower networks */
+		color: var(--subtext0);
 	}
 	:global(article h1) {
 		font-size: 1rem;
