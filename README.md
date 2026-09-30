@@ -8,7 +8,7 @@
 
 <img width="1280" height="683" alt="ditto v1.3.0 demo" src="https://github.com/user-attachments/assets/ed87d700-06e7-4395-9e7f-ef1eaa8eb295" />
 
-ditto is a system-wide ascii keyboard visualizer and keycaster that mirrors your live keyboard inputs in real time, even when the terminal isn't in focus. it automatically syncs with your native terminal color scheme for seamless, interactive eye candy. if you like it, a ⭐ is appreciated!
+ditto is a cross-platform and system-wide keyboard visualizer and keycaster in the terminal that works even when it isn't in focus. automatically syncs with your native terminal color scheme. intended for folks who want to prettify their terminal setup. if you like it, a ⭐ is appreciated!
 
 install via the [releases](https://github.com/arvingarciabtw/ditto/releases) or with go:
 
