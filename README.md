@@ -5,6 +5,7 @@
 [![Downloads](https://img.shields.io/github/downloads/arvingarciabtw/ditto/total?logo=github)](https://github.com/arvingarciabtw/ditto/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/arvingarciabtw/ditto/blob/main/LICENSE)
 [![Charm in the Wild](https://img.shields.io/badge/featured-charm_in_the_wild-pink)](https://github.com/charm-and-friends/charm-in-the-wild#development-tools)
+[![Ditto on The Terminal Index](https://cli.masoko.net/badge/ditto.svg)](https://cli.masoko.net/tools/ditto/)
 
 <img width="1280" height="683" alt="ditto v1.3.0 demo" src="https://github.com/user-attachments/assets/ed87d700-06e7-4395-9e7f-ef1eaa8eb295" />
 
